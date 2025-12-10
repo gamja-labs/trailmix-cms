@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { AppConfig } from './config';
 import { ALLOW_ANONYMOUS_KEY, ROLES_KEY } from './decorators/auth.decorator';
+import { AccountService } from './services/account.service';
 
 declare module 'fastify' {
     interface FastifyRequest {
@@ -23,6 +24,7 @@ export class AuthGuard implements CanActivate {
     constructor(
         private reflector: Reflector,
         private accountCollection: AccountCollection,
+        private accountService: AccountService,
         private configService: ConfigService<AppConfig>,
     ) {
         this.clerkClient = createClerkClient({
@@ -84,6 +86,7 @@ export class AuthGuard implements CanActivate {
             return {};
         }
 
+        // TODO: Cache user
         // const cachedUser = await this.userCache.getUser(auth.userId);
         // if (cachedUser) {
         //     return {
@@ -93,15 +96,15 @@ export class AuthGuard implements CanActivate {
         // }
 
         const user = await this.clerkClient.users.getUser(auth.userId)
-        const account = await this.accountCollection.upsertOne({ user_id: auth.userId }, {
-            $set: {
-                user_id: auth.userId,
-            }
-        }, {
-            system: true,
-            message: 'Account upserted',
-            source: AuthGuard.name,
-        });
+        const accountExists = await this.accountService.getAccount(auth.userId);
+        if (accountExists) {
+            return {
+                account: accountExists,
+                userPublicMetadata: user.publicMetadata,
+            };
+        }
+
+        const account = await this.accountService.upsertAccount(auth.userId);
 
         // TODO: Cache user
         // await this.userCache.cacheUser(auth.userId, {
