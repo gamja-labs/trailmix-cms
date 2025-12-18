@@ -2,6 +2,7 @@ import { defaultTheme } from '@vuepress/theme-default'
 import { defineUserConfig } from 'vuepress'
 import { viteBundler } from '@vuepress/bundler-vite'
 import generateFile from 'vite-plugin-generate-file'
+import path from 'path'
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -73,7 +74,7 @@ export default defineUserConfig({
                 generateFile([
                     {
                         type: 'json',
-                        output: './build.json',
+                        output: path.resolve(__dirname, 'dist', 'build.json'),
                         data: {
                             "version": require('../../package.json').version,
                             "build_id": process.env.VITE_BUILD_ID,
