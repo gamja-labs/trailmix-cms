@@ -74,7 +74,7 @@ Codecs in Trailmix CMS are Zod schemas that handle conversion between different 
 Trailmix CMS provides two built-in codecs:
 
 - **`ObjectId`**: Converts between string and MongoDB ObjectId
-- **`DateTime`**: Converts between ISO string and JavaScript Date (see Date Handling section)
+- **`DateTime`**: Converts between ISO string and JavaScript Date
 
 #### Example Usage
 

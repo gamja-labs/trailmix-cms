@@ -101,9 +101,9 @@ export class TodoListCollection extends AuditedCollection<Record> {
 ```
 
 Audited collections automatically include:
-- `created_by`: User ID who created the document
-- `updated_by`: User ID who last updated the document
-- Full audit trail of all changes stored in the audit collection
+- `action`: Action taken on the record `['create', 'update', 'delete']`
+- `context`: What identity preformed the action on the entity.
+- By default, only users with Admin role can query the Audit endpoints.
 
 ## Non-Audited Collections
 
