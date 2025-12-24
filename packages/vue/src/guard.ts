@@ -4,7 +4,7 @@ import { waitForClerkJsLoaded } from './clerk.js';
 
 export function buildAuthenticatedGuard(options: {
     unauthenticatedRoute: RouteLocationRaw;
-    allowAnonymous: boolean;
+    allowAnonymous?: boolean;
 }) {
     const guard: NavigationGuard = async (to: RouteLocationNormalized, from: RouteLocationNormalizedLoaded, next: NavigationGuardNext) => {
         const { user, isLoaded } = useUser();
