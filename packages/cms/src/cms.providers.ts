@@ -9,6 +9,7 @@ import { CollectionConfig } from './types/collection-config';
 import { Collection } from 'mongodb';
 import { AccountCollection, FileCollection, TextCollection } from './collections';
 import { AccountService } from './services/account.service';
+import { AuthGuardHook } from './auth-guard-hook';
 
 export function configureCollections(options?: {
     features?: {
@@ -50,7 +51,6 @@ export function createCmsProviders<
         textSetup?: (collection: Collection<TextEntity>) => Promise<void>,
         textConfig?: CollectionConfig,
     },
-    authGuardHook?: (account: AccountEntity) => Promise<boolean>,
     features?: {
         file?: boolean,
         text?: boolean,
@@ -65,11 +65,14 @@ export function createCmsProviders<
     const defaultCollectionConfig: CollectionConfig = {
         disableDefaultIndexes: false
     }
+
     return [
         // Auth Guard Hook
         {
             provide: PROVIDER_SYMBOLS.TRAILMIXCMS_CMS_AUTH_GUARD_HOOK,
-            useValue: options?.authGuardHook ?? (async (account: AccountEntity) => { return true; })
+            useValue: {
+                onHook: async () => true,
+            } as AuthGuardHook,
         },
         // Services
         AccountService,

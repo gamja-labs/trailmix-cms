@@ -9,7 +9,7 @@ import { CollectionName } from './constants';
 import { configuration } from './config';
 import { ConfigModule } from '@nestjs/config';
 import { collectionFactory } from '@trailmix-cms/db';
-import { CmsModule } from '@trailmix-cms/cms';
+import { CmsModule, provideAuthGuardHook } from '@trailmix-cms/cms';
 
 import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 
@@ -18,6 +18,7 @@ import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 import * as models from './models';
 import type { Collection } from 'mongodb';
 import * as AccountDto from './dto/account.dto';
+import { AppAuthGuardHook } from './hooks/auth-guard.hook';
 
 @Module({
     imports: [
@@ -41,12 +42,6 @@ import * as AccountDto from './dto/account.dto';
                     return dto;
                 },
             },
-            authGuardHook: async (account: models.Account.Entity) => {
-                console.log('Auth Guard Hook', account);
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                console.log('Auth Guard Hook resolved');
-                return true;
-            },
         }),
         // CacheModule,
     ],
@@ -54,6 +49,7 @@ import * as AccountDto from './dto/account.dto';
         ...controllers,
     ],
     providers: [
+        provideAuthGuardHook(AppAuthGuardHook),
         {
             provide: APP_PIPE,
             useClass: ZodValidationPipe,
@@ -65,7 +61,7 @@ import * as AccountDto from './dto/account.dto';
         ...services,
         // ...pipes,
         ...collections,
-        ...Object.values(CollectionName).map(collectionName => collectionFactory(collectionName))
+        ...Object.values(CollectionName).map(collectionName => collectionFactory(collectionName)),
     ],
 })
 export class AppModule { }

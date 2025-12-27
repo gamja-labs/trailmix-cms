@@ -10,6 +10,7 @@ import { AppConfig } from './config';
 import { ALLOW_ANONYMOUS_KEY, ROLES_KEY } from './decorators/auth.decorator';
 import { AccountService } from './services/account.service';
 import { PROVIDER_SYMBOLS } from './constants';
+import { AuthGuardHook } from './auth-guard-hook';
 
 declare module 'fastify' {
     interface FastifyRequest {
@@ -24,10 +25,9 @@ export class AuthGuard implements CanActivate {
 
     constructor(
         private reflector: Reflector,
-        private accountCollection: AccountCollection,
         private accountService: AccountService,
         private configService: ConfigService<AppConfig>,
-        @Inject(PROVIDER_SYMBOLS.TRAILMIXCMS_CMS_AUTH_GUARD_HOOK) private authGuardHook: (account: Account.Entity) => Promise<boolean>,
+        @Inject(PROVIDER_SYMBOLS.TRAILMIXCMS_CMS_AUTH_GUARD_HOOK) private authGuardHook: AuthGuardHook,
     ) {
         this.clerkClient = createClerkClient({
             secretKey: this.configService.get('CLERK_SECRET_KEY'),
@@ -107,10 +107,15 @@ export class AuthGuard implements CanActivate {
         }
 
         const account = await this.accountService.upsertAccount(auth.userId);
-
-        const authGuardHookresult = await this.authGuardHook(account!);
+        
+        // TODO: Lock this step to prevent race conditions
+        const authGuardHookresult = await this.authGuardHook.onHook(account!);
 
         if (!authGuardHookresult) {
+            this.logger.error('Failed to validate account using auth guard hook', {
+                userId: auth.userId,
+                accountId: account?._id,
+            });
             throw new InternalServerErrorException('Failed to validate account using auth guard hook');
         }
 
