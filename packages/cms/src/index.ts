@@ -5,5 +5,4 @@ export * from './decorators/account.decorator';
 export * from './cms.module';
 export * from './auth-guard-hook';
 export * from './utils/provider-helpers';
-export { buildAccountController } from './controllers/account.controller';
-export { AuditController } from './controllers/audit.controller';
+export * as Controllers from './controllers';

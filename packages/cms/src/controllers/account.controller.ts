@@ -1,15 +1,16 @@
-import { Controller, Delete, Get, Inject, Logger } from '@nestjs/common';
+import { Controller, Get, Inject, Logger } from '@nestjs/common';
 import { ApiOperation, ApiTags, ApiOkResponse } from '@nestjs/swagger';
 import * as models from '@trailmix-cms/models';
 import { Auth } from '../decorators/auth.decorator';
-import { AccountAuthorization } from '../services/authorization.service';
 import { PROVIDER_SYMBOLS } from '../constants/provider-symbols';
-import { AccountContext, buildAccountContextDecorator } from '../decorators/account.decorator';
+import { AccountContext } from '../decorators/account.decorator';
+import { Account } from '@trailmix-cms/models';
+import { createZodDto } from 'nestjs-zod';
 
 export function buildAccountController<
     AccountEntity extends models.Account.Entity = models.Account.Entity,
     AccountDtoEntity = AccountEntity
->(accountDto: any) {
+>(accountDto: any = createZodDto(Account.entitySchema)) {
 
     @Auth()
     @ApiTags('account')
@@ -32,3 +33,4 @@ export function buildAccountController<
     return AccountController;
 }
 
+export const AccountController = buildAccountController();
