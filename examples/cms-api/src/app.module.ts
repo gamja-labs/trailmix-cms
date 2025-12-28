@@ -9,7 +9,7 @@ import { CollectionName } from './constants';
 import { configuration } from './config';
 import { ConfigModule } from '@nestjs/config';
 import { collectionFactory } from '@trailmix-cms/db';
-import { CmsModule, provideAuthGuardHook } from '@trailmix-cms/cms';
+import { CmsModule, provideAuthGuardHook, buildAccountController, AuditController } from '@trailmix-cms/cms';
 
 import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 
@@ -47,6 +47,8 @@ import { AppAuthGuardHook } from './hooks/auth-guard.hook';
     ],
     controllers: [
         ...controllers,
+        buildAccountController<models.Account.Entity, AccountDto.Entity>(AccountDto.AccountDto),
+        AuditController,
     ],
     providers: [
         provideAuthGuardHook(AppAuthGuardHook),

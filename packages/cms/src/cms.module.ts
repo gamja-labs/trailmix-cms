@@ -6,11 +6,9 @@ import { DatabaseModule, Utils } from '@trailmix-cms/db';
 
 import { configuration } from './config';
 import { configureCollections, createCmsProviders } from './cms.providers';
-import { buildAccountController } from './controllers/account.controller';
-import { AuditController } from './controllers/audit.controller';
 
 export type CmsModuleOptions = {
-    disableAuditController?: boolean;
+    // For later use
 }
 
 @Module({
@@ -34,10 +32,7 @@ export class CmsModule {
         return {
             module: CmsModule,
             providers,
-            controllers: [
-                ...(options && options.disableAuditController ? [] : [AuditController]),
-                buildAccountController<AccountEntity, AccountDtoEntity>(options?.entities?.accountDto),
-            ],
+            controllers: [],
             exports: [
                 ...providers,
                 ...Utils.buildCollectionTokens(collectionNames),

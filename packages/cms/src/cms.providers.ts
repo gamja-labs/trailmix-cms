@@ -67,13 +67,6 @@ export function createCmsProviders<
     }
 
     return [
-        // Auth Guard Hook
-        {
-            provide: PROVIDER_SYMBOLS.TRAILMIXCMS_CMS_AUTH_GUARD_HOOK,
-            useValue: {
-                onHook: async () => true,
-            } as AuthGuardHook,
-        },
         // Services
         AccountService,
         // Collections

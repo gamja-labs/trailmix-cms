@@ -7,7 +7,7 @@ useHead({
 
 import { ref, onMounted, computed, nextTick } from 'vue';
 import { useApi } from '@/lib/api';
-import type { TodoList, TodoItemResponseDto, CreateTodoListDto, CreateTodoItemDto, UpdateTodoItemDto } from '@/client/Api';
+import type { TodoList, TodoItemResponseDto, CreateTodoListDto, CreateTodoItemDto, UpdateTodoItemDto, AccountDto } from '@/client/Api';
 
 const { api } = useApi();
 
@@ -24,6 +24,8 @@ const editInputRef = ref<HTMLInputElement | null>(null);
 const showCreateListDialog = ref(false);
 const newListName = ref('');
 const creatingList = ref(false);
+const accountInfo = ref<AccountDto | null>(null);
+const loadingAccountInfo = ref(false);
 
 const selectedList = computed(() => {
     return todoLists.value.find(list => list._id === selectedListId.value) || null;
@@ -216,6 +218,21 @@ const deleteTodo = async (todoId: string) => {
     }
 };
 
+const getAccountInfo = async () => {
+    try {
+        loadingAccountInfo.value = true;
+        const response = await api.account.accountControllerInfo();
+        accountInfo.value = response.data;
+        console.log('Account info:', response.data);
+        alert(`Account Info:\nID: ${response.data._id}\nUser ID: ${response.data.user_id}\nName: ${response.data.name}`);
+    } catch (error: any) {
+        console.error('Failed to get account info:', error);
+        alert(error?.error?.message || 'Failed to get account info');
+    } finally {
+        loadingAccountInfo.value = false;
+    }
+};
+
 onMounted(async () => {
     await loadTodoLists();
     if (selectedListId.value) {
@@ -257,6 +274,13 @@ onMounted(async () => {
                 <div class="todos-header">
                     <h1 class="todos-title">{{ selectedList?.name || 'Select a list' }}</h1>
                     <div class="todos-controls">
+                        <button 
+                            class="btn btn-outline btn-sm" 
+                            @click="getAccountInfo" 
+                            :disabled="loadingAccountInfo"
+                        >
+                            {{ loadingAccountInfo ? 'Loading...' : 'Test Account Info' }}
+                        </button>
                         <label class="toggle-label">
                             <input type="checkbox" v-model="showCompleted" />
                             <span>Show Completed</span>

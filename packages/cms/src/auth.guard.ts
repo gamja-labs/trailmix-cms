@@ -1,5 +1,5 @@
 import { Reflector } from '@nestjs/core';
-import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, Logger, ForbiddenException, InternalServerErrorException, Inject } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, Logger, ForbiddenException, InternalServerErrorException, Inject, Optional } from '@nestjs/common';
 import { FastifyRequest } from 'fastify';
 import { getAuth, createClerkClient, ClerkClient } from '@clerk/fastify';
 import { Account, Role } from '@trailmix-cms/models';
@@ -27,7 +27,7 @@ export class AuthGuard implements CanActivate {
         private reflector: Reflector,
         private accountService: AccountService,
         private configService: ConfigService<AppConfig>,
-        @Inject(PROVIDER_SYMBOLS.TRAILMIXCMS_CMS_AUTH_GUARD_HOOK) private authGuardHook: AuthGuardHook,
+        @Optional() @Inject(PROVIDER_SYMBOLS.TRAILMIXCMS_CMS_AUTH_GUARD_HOOK) private authGuardHook?: AuthGuardHook,
     ) {
         this.clerkClient = createClerkClient({
             secretKey: this.configService.get('CLERK_SECRET_KEY'),
@@ -107,16 +107,17 @@ export class AuthGuard implements CanActivate {
         }
 
         const account = await this.accountService.upsertAccount(auth.userId);
-        
-        // TODO: Lock this step to prevent race conditions
-        const authGuardHookresult = await this.authGuardHook.onHook(account!);
 
-        if (!authGuardHookresult) {
-            this.logger.error('Failed to validate account using auth guard hook', {
-                userId: auth.userId,
-                accountId: account?._id,
-            });
-            throw new InternalServerErrorException('Failed to validate account using auth guard hook');
+        // TODO: Lock this step to prevent race conditions
+        if (this.authGuardHook) {
+            const authGuardHookresult = await this.authGuardHook.onHook(account!);
+            if (!authGuardHookresult) {
+                this.logger.error('Failed to validate account using auth guard hook', {
+                    userId: auth.userId,
+                    accountId: account?._id,
+                });
+                throw new InternalServerErrorException('Failed to validate account using auth guard hook');
+            }
         }
 
         // TODO: Cache user
