@@ -2,7 +2,11 @@
   "name": "@trailmix-cms/utils",
   "version": "0.4.3",
   "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "types": "./dist/index.d.ts", 
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gamja-labs/trailmix-cms"
+  },
   "scripts": {
     "build": "tsc -b -v",
     "clean": "tsc -b --clean",
@@ -31,5 +35,8 @@
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
     "zod": "^4.1.12"
+  },
+  "publishConfig": {
+    "provenance": true
   }
 }

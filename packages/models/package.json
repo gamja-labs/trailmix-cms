@@ -3,6 +3,10 @@
   "version": "0.4.3",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gamja-labs/trailmix-cms"
+  },
   "scripts": {
     "build": "tsc -b -v",
     "clean": "tsc -b --clean",
@@ -14,5 +18,8 @@
   },
   "devDependencies": {
     "typescript": "5.9.3"
+  },
+  "publishConfig": {
+    "provenance": true
   }
 }

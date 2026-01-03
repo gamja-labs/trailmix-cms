@@ -7,6 +7,10 @@
   "exports": {
     ".": "./dist/index.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gamja-labs/trailmix-cms"
+  },
   "scripts": {
     "build": "tsc -b && swc src -d dist --strip-leading-paths"
   },
@@ -23,5 +27,8 @@
   "peerDependencies": {
     "@clerk/vue": "^1.17.1",
     "vue": "^3.5.25"
+  },
+  "publishConfig": {
+    "provenance": true
   }
 }
