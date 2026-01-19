@@ -14,7 +14,7 @@ export function buildAccountController<
     AccountDtoEntity = AccountEntity
 >(accountDto: any = createZodDto(models.Account.schema)) {
 
-    @Auth({ principalTypes: [models.Principal.Account] })
+    @Auth({ requiredPrincipalTypes: [models.Principal.Account] })
     @ApiTags('account')
     @Controller('account')
     class AccountController {

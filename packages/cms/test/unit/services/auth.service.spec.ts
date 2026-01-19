@@ -7,9 +7,9 @@ import * as trailmixModels from '@trailmix-cms/models';
 
 import { AuthService, AuthResult, GlobalRoleService } from '@/services';
 import { AccountService } from '@/services/account.service';
-import { ApiKeyCollection, SecurityAuditCollection } from '@/collections';
+import { AccountCollection, ApiKeyCollection, SecurityAuditCollection } from '@/collections';
 import { PROVIDER_SYMBOLS } from '@/constants';
-import { type AuthGuardHook, type RequestPrincipal } from '@/types';
+import { type RequestPrincipal } from '@/types';
 
 import * as TestUtils from '../../utils';
 
@@ -21,6 +21,7 @@ jest.mock('@clerk/fastify', () => ({
 describe('AuthService', () => {
     let service: AuthService;
     let accountService: jest.Mocked<AccountService>;
+    let accountCollection: jest.Mocked<AccountCollection>;
     let globalRoleService: jest.Mocked<GlobalRoleService>;
     let securityAuditCollection: jest.Mocked<SecurityAuditCollection>;
     let apiKeyCollection: jest.Mocked<ApiKeyCollection>;
@@ -36,6 +37,10 @@ describe('AuthService', () => {
         const mockAccountService = {
             getAccount: jest.fn(),
             upsertAccount: jest.fn(),
+        };
+
+        const mockAccountCollection = {
+            findOne: jest.fn(),
         };
 
         const mockGlobalRoleService = {
@@ -58,6 +63,10 @@ describe('AuthService', () => {
                     useValue: mockAccountService,
                 },
                 {
+                    provide: AccountCollection,
+                    useValue: mockAccountCollection,
+                },
+                {
                     provide: GlobalRoleService,
                     useValue: mockGlobalRoleService,
                 },
@@ -74,6 +83,7 @@ describe('AuthService', () => {
 
         service = module.get<AuthService>(AuthService);
         accountService = module.get(AccountService);
+        accountCollection = module.get(AccountCollection);
         globalRoleService = module.get(GlobalRoleService);
         securityAuditCollection = module.get(SecurityAuditCollection);
         apiKeyCollection = module.get(ApiKeyCollection);
@@ -99,9 +109,12 @@ describe('AuthService', () => {
             it('returns IsValid when allowAnonymous is true (ensuring anonymous access is allowed)', async () => {
                 const result = await service.validateAuth(
                     null,
-                    true,
-                    [],
-                    [],
+                    {
+                        allowAnonymous: true,
+                        requiredPrincipalTypes: [],
+                        requiredGlobalRoles: [],
+                        requiredApiKeyScopes: [],
+                    },
                     requestUrl
                 );
 
@@ -112,9 +125,12 @@ describe('AuthService', () => {
             it('returns Unauthorized when allowAnonymous is false (ensuring anonymous access is blocked)', async () => {
                 const result = await service.validateAuth(
                     null,
-                    false,
-                    [],
-                    [],
+                    {
+                        allowAnonymous: false,
+                        requiredPrincipalTypes: [],
+                        requiredGlobalRoles: [],
+                        requiredApiKeyScopes: [],
+                    },
                     requestUrl
                 );
 
@@ -127,9 +143,12 @@ describe('AuthService', () => {
             it('returns IsValid when principal type matches required type (ensuring matching principal types pass)', async () => {
                 const result = await service.validateAuth(
                     accountPrincipal,
-                    false,
-                    [trailmixModels.Principal.Account],
-                    [],
+                    {
+                        allowAnonymous: false,
+                        requiredPrincipalTypes: [trailmixModels.Principal.Account],
+                        requiredGlobalRoles: [],
+                        requiredApiKeyScopes: [],
+                    },
                     requestUrl
                 );
 
@@ -140,9 +159,12 @@ describe('AuthService', () => {
             it('returns Forbidden when principal type does not match required type (ensuring non-matching principal types are rejected)', async () => {
                 const result = await service.validateAuth(
                     accountPrincipal,
-                    false,
-                    [trailmixModels.Principal.ApiKey],
-                    [],
+                    {
+                        allowAnonymous: false,
+                        requiredPrincipalTypes: [trailmixModels.Principal.ApiKey],
+                        requiredGlobalRoles: [],
+                        requiredApiKeyScopes: [],
+                    },
                     requestUrl
                 );
 
@@ -159,9 +181,108 @@ describe('AuthService', () => {
             it('returns IsValid when no principal types are required (ensuring any principal type passes when none required)', async () => {
                 const result = await service.validateAuth(
                     accountPrincipal,
-                    false,
-                    [],
-                    [],
+                    {
+                        allowAnonymous: false,
+                        requiredPrincipalTypes: [],
+                        requiredGlobalRoles: [],
+                        requiredApiKeyScopes: [],
+                    },
+                    requestUrl
+                );
+
+                expect(result).toBe(AuthResult.IsValid);
+                expect(securityAuditCollection.insertOne).not.toHaveBeenCalled();
+            });
+        });
+
+        describe('API key scope validation', () => {
+            const apiKeyEntity = TestUtils.Entities.createApiKey({
+                scope_type: trailmixModels.ApiKeyScope.Account,
+            });
+            const apiKeyPrincipal: RequestPrincipal = {
+                entity: apiKeyEntity,
+                principal_type: trailmixModels.Principal.ApiKey,
+            };
+
+            it('returns IsValid when API key scope matches required scope (ensuring matching API key scopes pass)', async () => {
+                const result = await service.validateAuth(
+                    apiKeyPrincipal,
+                    {
+                        allowAnonymous: false,
+                        requiredPrincipalTypes: [],
+                        requiredGlobalRoles: [],
+                        requiredApiKeyScopes: [trailmixModels.ApiKeyScope.Account],
+                    },
+                    requestUrl
+                );
+
+                expect(result).toBe(AuthResult.IsValid);
+                expect(securityAuditCollection.insertOne).not.toHaveBeenCalled();
+            });
+
+            it('returns Forbidden when API key scope does not match required scope (ensuring non-matching API key scopes are rejected)', async () => {
+                const result = await service.validateAuth(
+                    apiKeyPrincipal,
+                    {
+                        allowAnonymous: false,
+                        requiredPrincipalTypes: [],
+                        requiredGlobalRoles: [],
+                        requiredApiKeyScopes: [trailmixModels.ApiKeyScope.Organization],
+                    },
+                    requestUrl
+                );
+
+                expect(result).toBe(AuthResult.Forbidden);
+                expect(securityAuditCollection.insertOne).toHaveBeenCalledWith({
+                    event_type: trailmixModels.SecurityAuditEventType.UnauthorizedAccess,
+                    principal_id: apiKeyEntity._id,
+                    principal_type: trailmixModels.Principal.ApiKey,
+                    message: `Unauthorized access to ${requestUrl}, required API key scope is not allowed:${trailmixModels.ApiKeyScope.Organization}`,
+                    source: AuthService.name,
+                });
+            });
+
+            it('returns IsValid when no API key scopes are required (ensuring any API key scope passes when none required)', async () => {
+                const result = await service.validateAuth(
+                    apiKeyPrincipal,
+                    {
+                        allowAnonymous: false,
+                        requiredPrincipalTypes: [],
+                        requiredGlobalRoles: [],
+                        requiredApiKeyScopes: [],
+                    },
+                    requestUrl
+                );
+
+                expect(result).toBe(AuthResult.IsValid);
+                expect(securityAuditCollection.insertOne).not.toHaveBeenCalled();
+            });
+
+            it('returns IsValid when API key has one of multiple required scopes (ensuring any matching scope passes)', async () => {
+                const result = await service.validateAuth(
+                    apiKeyPrincipal,
+                    {
+                        allowAnonymous: false,
+                        requiredPrincipalTypes: [],
+                        requiredGlobalRoles: [],
+                        requiredApiKeyScopes: [trailmixModels.ApiKeyScope.Organization, trailmixModels.ApiKeyScope.Account],
+                    },
+                    requestUrl
+                );
+
+                expect(result).toBe(AuthResult.IsValid);
+                expect(securityAuditCollection.insertOne).not.toHaveBeenCalled();
+            });
+
+            it('does not check API key scopes for account principals (ensuring scope check only applies to API keys)', async () => {
+                const result = await service.validateAuth(
+                    accountPrincipal,
+                    {
+                        allowAnonymous: false,
+                        requiredPrincipalTypes: [],
+                        requiredGlobalRoles: [],
+                        requiredApiKeyScopes: [trailmixModels.ApiKeyScope.Account],
+                    },
                     requestUrl
                 );
 
@@ -174,9 +295,12 @@ describe('AuthService', () => {
             it('returns IsValid when no roles are required (ensuring authenticated principals pass when no roles required)', async () => {
                 const result = await service.validateAuth(
                     accountPrincipal,
-                    false,
-                    [],
-                    [],
+                    {
+                        allowAnonymous: false,
+                        requiredPrincipalTypes: [],
+                        requiredGlobalRoles: [],
+                        requiredApiKeyScopes: [],
+                    },
                     requestUrl
                 );
 
@@ -189,9 +313,12 @@ describe('AuthService', () => {
 
                 const result = await service.validateAuth(
                     accountPrincipal,
-                    false,
-                    [],
-                    [trailmixModels.RoleValue.User],
+                    {
+                        allowAnonymous: false,
+                        requiredPrincipalTypes: [],
+                        requiredGlobalRoles: [trailmixModels.RoleValue.User],
+                        requiredApiKeyScopes: [],
+                    },
                     requestUrl
                 );
 
@@ -214,9 +341,12 @@ describe('AuthService', () => {
 
                 const result = await service.validateAuth(
                     accountPrincipal,
-                    false,
-                    [],
-                    [trailmixModels.RoleValue.User],
+                    {
+                        allowAnonymous: false,
+                        requiredPrincipalTypes: [],
+                        requiredGlobalRoles: [trailmixModels.RoleValue.User],
+                        requiredApiKeyScopes: [],
+                    },
                     requestUrl
                 );
 
@@ -234,9 +364,12 @@ describe('AuthService', () => {
 
                 const result = await service.validateAuth(
                     accountPrincipal,
-                    false,
-                    [],
-                    [trailmixModels.RoleValue.User],
+                    {
+                        allowAnonymous: false,
+                        requiredPrincipalTypes: [],
+                        requiredGlobalRoles: [trailmixModels.RoleValue.User],
+                        requiredApiKeyScopes: [],
+                    },
                     requestUrl
                 );
 
@@ -258,9 +391,12 @@ describe('AuthService', () => {
 
                 const result = await service.validateAuth(
                     accountPrincipal,
-                    false,
-                    [],
-                    [trailmixModels.RoleValue.User],
+                    {
+                        allowAnonymous: false,
+                        requiredPrincipalTypes: [],
+                        requiredGlobalRoles: [trailmixModels.RoleValue.User],
+                        requiredApiKeyScopes: [],
+                    },
                     requestUrl
                 );
 
@@ -278,9 +414,12 @@ describe('AuthService', () => {
 
                 const result = await service.validateAuth(
                     accountPrincipal,
-                    false,
-                    [],
-                    [trailmixModels.RoleValue.Admin, trailmixModels.RoleValue.User],
+                    {
+                        allowAnonymous: false,
+                        requiredPrincipalTypes: [],
+                        requiredGlobalRoles: [trailmixModels.RoleValue.Admin, trailmixModels.RoleValue.User],
+                        requiredApiKeyScopes: [],
+                    },
                     requestUrl
                 );
 
@@ -297,9 +436,12 @@ describe('AuthService', () => {
 
                 const result = await service.validateAuth(
                     accountPrincipal,
-                    false,
-                    [],
-                    [trailmixModels.RoleValue.User],
+                    {
+                        allowAnonymous: false,
+                        requiredPrincipalTypes: [],
+                        requiredGlobalRoles: [trailmixModels.RoleValue.User],
+                        requiredApiKeyScopes: [],
+                    },
                     requestUrl
                 );
 
@@ -330,9 +472,12 @@ describe('AuthService', () => {
 
                 const result = await service.validateAuth(
                     accountPrincipal,
-                    false,
-                    [],
-                    [trailmixModels.RoleValue.User],
+                    {
+                        allowAnonymous: false,
+                        requiredPrincipalTypes: [],
+                        requiredGlobalRoles: [trailmixModels.RoleValue.User],
+                        requiredApiKeyScopes: [],
+                    },
                     requestUrl
                 );
 
@@ -344,9 +489,12 @@ describe('AuthService', () => {
             it('returns IsValid when allowAnonymous is true even with principal (ensuring anonymous flag allows authenticated principals)', async () => {
                 const result = await service.validateAuth(
                     accountPrincipal,
-                    true,
-                    [],
-                    [trailmixModels.RoleValue.User],
+                    {
+                        allowAnonymous: true,
+                        requiredPrincipalTypes: [],
+                        requiredGlobalRoles: [trailmixModels.RoleValue.User],
+                        requiredApiKeyScopes: [],
+                    },
                     requestUrl
                 );
 
@@ -489,6 +637,10 @@ describe('AuthService', () => {
                         useValue: { getAccount: jest.fn(), upsertAccount: jest.fn() },
                     },
                     {
+                        provide: AccountCollection,
+                        useValue: { findOne: jest.fn() },
+                    },
+                    {
                         provide: GlobalRoleService,
                         useValue: { find: jest.fn() },
                     },
@@ -604,6 +756,10 @@ describe('AuthService', () => {
                         },
                     },
                     {
+                        provide: AccountCollection,
+                        useValue: { findOne: jest.fn() },
+                    },
+                    {
                         provide: GlobalRoleService,
                         useValue: { find: jest.fn() },
                     },
@@ -655,6 +811,10 @@ describe('AuthService', () => {
                         },
                     },
                     {
+                        provide: AccountCollection,
+                        useValue: { findOne: jest.fn() },
+                    },
+                    {
                         provide: GlobalRoleService,
                         useValue: { find: jest.fn() },
                     },
@@ -699,6 +859,10 @@ describe('AuthService', () => {
                             getAccount: jest.fn().mockResolvedValue(null),
                             upsertAccount: jest.fn().mockResolvedValue(TestUtils.Entities.createAccount()),
                         },
+                    },
+                    {
+                        provide: AccountCollection,
+                        useValue: { findOne: jest.fn() },
                     },
                     {
                         provide: GlobalRoleService,
@@ -750,6 +914,10 @@ describe('AuthService', () => {
                         },
                     },
                     {
+                        provide: AccountCollection,
+                        useValue: { findOne: jest.fn() },
+                    },
+                    {
                         provide: GlobalRoleService,
                         useValue: { find: jest.fn() },
                     },
@@ -785,6 +953,84 @@ describe('AuthService', () => {
             expect(result?.principal_type).toBe(trailmixModels.Principal.Account);
             expect(result?.entity).toEqual(accountEntity);
             expect(mockAuthGuardHook.onHook).toHaveBeenCalledWith(accountEntity);
+        });
+    });
+
+    describe('getAccountFromPrincipal', () => {
+        it('returns account entity when principal type is Account (ensuring account principals return account directly)', async () => {
+            const accountEntity = TestUtils.Entities.createAccount();
+            const accountPrincipal: RequestPrincipal = {
+                entity: accountEntity,
+                principal_type: trailmixModels.Principal.Account,
+            };
+
+            const result = await service.getAccountFromPrincipal(accountPrincipal);
+
+            expect(result).toEqual(accountEntity);
+            expect(accountCollection.findOne).not.toHaveBeenCalled();
+        });
+
+        it('returns account when principal is account-scoped API key (ensuring account-scoped API keys resolve to account)', async () => {
+            const accountEntity = TestUtils.Entities.createAccount();
+            const apiKeyEntity = TestUtils.Entities.createApiKey({
+                scope_type: trailmixModels.ApiKeyScope.Account,
+                scope_id: accountEntity._id,
+            });
+            const apiKeyPrincipal: RequestPrincipal = {
+                entity: apiKeyEntity,
+                principal_type: trailmixModels.Principal.ApiKey,
+            };
+
+            accountCollection.findOne.mockResolvedValue(accountEntity);
+
+            const result = await service.getAccountFromPrincipal(apiKeyPrincipal);
+
+            expect(result).toEqual(accountEntity);
+            expect(accountCollection.findOne).toHaveBeenCalledWith({ _id: accountEntity._id });
+        });
+
+        it('throws error when API key is not account-scoped (ensuring non-account-scoped API keys are rejected)', async () => {
+            const apiKeyEntity = TestUtils.Entities.createApiKey({
+                scope_type: trailmixModels.ApiKeyScope.Global,
+            });
+            const apiKeyPrincipal: RequestPrincipal = {
+                entity: apiKeyEntity,
+                principal_type: trailmixModels.Principal.ApiKey,
+            };
+
+            await expect(service.getAccountFromPrincipal(apiKeyPrincipal)).rejects.toThrow('API key is not account-scoped');
+            expect(accountCollection.findOne).not.toHaveBeenCalled();
+        });
+
+        it('throws error when account-scoped API key references non-existent account (ensuring missing accounts are rejected)', async () => {
+            const accountEntity = TestUtils.Entities.createAccount();
+            const apiKeyEntity = TestUtils.Entities.createApiKey({
+                scope_type: trailmixModels.ApiKeyScope.Account,
+                scope_id: accountEntity._id,
+            });
+            const apiKeyPrincipal: RequestPrincipal = {
+                entity: apiKeyEntity,
+                principal_type: trailmixModels.Principal.ApiKey,
+            };
+
+            accountCollection.findOne.mockResolvedValue(null);
+
+            await expect(service.getAccountFromPrincipal(apiKeyPrincipal)).rejects.toThrow('Account not found');
+            expect(accountCollection.findOne).toHaveBeenCalledWith({ _id: accountEntity._id });
+        });
+
+        it('throws error when API key has Organization scope (ensuring organization-scoped API keys are rejected)', async () => {
+            const apiKeyEntity = TestUtils.Entities.createApiKey({
+                scope_type: trailmixModels.ApiKeyScope.Organization,
+                scope_id: TestUtils.Entities.createAccount()._id,
+            });
+            const apiKeyPrincipal: RequestPrincipal = {
+                entity: apiKeyEntity,
+                principal_type: trailmixModels.Principal.ApiKey,
+            };
+
+            await expect(service.getAccountFromPrincipal(apiKeyPrincipal)).rejects.toThrow('API key is not account-scoped');
+            expect(accountCollection.findOne).not.toHaveBeenCalled();
         });
     });
 });

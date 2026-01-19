@@ -2,7 +2,7 @@ import { Reflector } from '@nestjs/core';
 import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { FastifyRequest } from 'fastify';
 import * as trailmixModels from '@trailmix-cms/models';
-import { ALLOW_ANONYMOUS_KEY, PRINCIPAL_TYPES_KEY, ROLES_KEY } from './decorators/auth.decorator';
+import { AUTH_OPTIONS_KEY, AuthOptions } from './decorators/auth.decorator';
 import { AuthResult, AuthService } from './services/auth.service';
 import { type RequestPrincipal } from './types';
 
@@ -22,17 +22,7 @@ export class AuthGuard implements CanActivate {
     async canActivate(
         context: ExecutionContext,
     ): Promise<boolean> {
-        const requiredGlobalRoles = this.reflector.getAllAndOverride<(trailmixModels.RoleValue | string)[]>(ROLES_KEY, [
-            context.getHandler(),
-            context.getClass(),
-        ]);
-
-        const allowAnonymous = this.reflector.getAllAndOverride<boolean>(ALLOW_ANONYMOUS_KEY, [
-            context.getHandler(),
-            context.getClass(),
-        ]);
-
-        const requiredPrincipalTypes = this.reflector.getAllAndOverride<trailmixModels.Principal[]>(PRINCIPAL_TYPES_KEY, [
+        const { allowAnonymous, requiredPrincipalTypes, requiredApiKeyScopes, requiredGlobalRoles } = this.reflector.getAllAndOverride<AuthOptions>(AUTH_OPTIONS_KEY, [
             context.getHandler(),
             context.getClass(),
         ]);
@@ -43,9 +33,12 @@ export class AuthGuard implements CanActivate {
         const principal = await this.authService.getPrincipal(context);
         const authResult = await this.authService.validateAuth(
             principal,
-            allowAnonymous,
-            requiredPrincipalTypes,
-            requiredGlobalRoles,
+            {
+                allowAnonymous,
+                requiredPrincipalTypes,
+                requiredGlobalRoles,
+                requiredApiKeyScopes,
+            },
             requestUrl,
         );
 

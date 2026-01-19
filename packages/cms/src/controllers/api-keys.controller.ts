@@ -8,7 +8,7 @@ import { type RequestPrincipal } from '../types';
 import { ApiKeyService } from '../services/api-key.service';
 import { ApiKeyByIdPipe } from '../pipes/api-key.pipe';
 
-@Auth({ principalTypes: [trailmixModels.Principal.Account, trailmixModels.Principal.ApiKey] })
+@Auth({ requiredPrincipalTypes: [trailmixModels.Principal.Account, trailmixModels.Principal.ApiKey] })
 @ApiTags('api-keys')
 @Controller('api-keys')
 export class ApiKeysController {

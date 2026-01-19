@@ -10,7 +10,7 @@ import { validateObjectId } from '@trailmix-cms/utils';
 import * as dto from '../dto/security-audit.dto';
 import * as trailmixModels from '@trailmix-cms/models';
 
-@Auth({ globalRoles: [RoleValue.Admin], principalTypes: [Principal.Account, Principal.ApiKey] })
+@Auth({ requiredGlobalRoles: [RoleValue.Admin], requiredPrincipalTypes: [Principal.Account, Principal.ApiKey] })
 @ApiTags('security-audits')
 @Controller('security-audits')
 export class SecurityAuditsController {

@@ -8,7 +8,7 @@ import { validateObjectId } from '@trailmix-cms/utils';
 import { Auth } from '../decorators/auth.decorator';
 import * as dto from '../dto/audit.dto';
 
-@Auth({ globalRoles: [RoleValue.Admin] })
+@Auth({ requiredGlobalRoles: [RoleValue.Admin] })
 @ApiTags('audit')
 @Controller('audit')
 export class AuditController {

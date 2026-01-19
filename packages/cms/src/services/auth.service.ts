@@ -2,7 +2,7 @@ import { Injectable, Logger, InternalServerErrorException, Inject, Optional, Exe
 import { FastifyRequest } from 'fastify';
 import { getAuth } from '@clerk/fastify';
 import * as trailmixModels from '@trailmix-cms/models';
-import { ApiKeyCollection, SecurityAuditCollection } from '../collections';
+import { AccountCollection, ApiKeyCollection, SecurityAuditCollection } from '../collections';
 import { AccountService } from './account.service';
 import { GlobalRoleService } from './global-role.service';
 import { PROVIDER_SYMBOLS } from '../constants';
@@ -22,6 +22,7 @@ export class AuthService {
 
     constructor(
         private accountService: AccountService,
+        private accountCollection: AccountCollection,
         private globalRoleService: GlobalRoleService,
         private securityAuditCollection: SecurityAuditCollection,
         @Optional() @Inject(PROVIDER_SYMBOLS.AUTH_GUARD_HOOK) private authGuardHook?: AuthGuardHook,
@@ -31,19 +32,22 @@ export class AuthService {
     /**
      * Validate authentication and authorization for a request
      * @param principal The principal from the request (null if not authenticated)
-     * @param allowAnonymous Whether anonymous access is allowed
-     * @param requiredPrincipalTypes Required principal types
-     * @param requiredGlobalRoles Required global roles
+     * @param config The authentication configuration
      * @param requestUrl The request URL for audit logging
      * @returns AuthResult
      */
     async validateAuth(
         principal: RequestPrincipal | null,
-        allowAnonymous: boolean,
-        requiredPrincipalTypes: trailmixModels.Principal[],
-        requiredGlobalRoles: (trailmixModels.RoleValue | string)[],
+        config: {
+            allowAnonymous: boolean,
+            requiredPrincipalTypes: trailmixModels.Principal[],
+            requiredGlobalRoles: (trailmixModels.RoleValue | string)[],
+            requiredApiKeyScopes: trailmixModels.ApiKeyScope[],
+        },
         requestUrl: string,
     ): Promise<AuthResult> {
+        const { allowAnonymous, requiredPrincipalTypes, requiredGlobalRoles, requiredApiKeyScopes } = config;
+        
         if (!principal) {
             if (allowAnonymous) {
                 return AuthResult.IsValid;
@@ -63,6 +67,20 @@ export class AuthService {
                     principal_id: principal.entity._id,
                     principal_type: principal.principal_type,
                     message: `Unauthorized access to ${requestUrl}, required principal type not found: ${requiredPrincipalTypes.join(', ')}`,
+                    source: AuthService.name,
+                }
+            );
+            return AuthResult.Forbidden;
+        }
+
+        // Check if API key scope is required, if no required API key scopes, allow any API key scope
+        if (principal.principal_type === trailmixModels.Principal.ApiKey && requiredApiKeyScopes.length > 0 && !requiredApiKeyScopes.includes(principal.entity.scope_type)) {
+            await this.securityAuditCollection.insertOne(
+                {
+                    event_type: trailmixModels.SecurityAuditEventType.UnauthorizedAccess,
+                    principal_id: principal.entity._id,
+                    principal_type: principal.principal_type,
+                    message: `Unauthorized access to ${requestUrl}, required API key scope is not allowed:${requiredApiKeyScopes.join(', ')}`,
                     source: AuthService.name,
                 }
             );
@@ -113,6 +131,30 @@ export class AuthService {
         }
 
         return AuthResult.IsValid;
+    }
+
+    /**
+     * Get the account from the request principal, if the principal is an account API key, it will return the account associated with the API key
+     * @param principal The principal
+     * @returns The account
+     */
+    async getAccountFromPrincipal(principal: RequestPrincipal): Promise<trailmixModels.Account.Entity | null> {
+        if (principal.principal_type === trailmixModels.Principal.Account) {
+            return principal.entity;
+        }
+
+        const apiKey = principal.entity;
+
+        if (apiKey.scope_type !== trailmixModels.ApiKeyScope.Account) {
+            throw new Error('API key is not account-scoped');
+        }
+
+        const account = await this.accountCollection.findOne({ _id: apiKey.scope_id });
+        if (!account) {
+            throw new Error('Account not found');
+        }
+
+        return account;
     }
 
     /**
@@ -209,4 +251,6 @@ export class AuthService {
 
         return apiKeyEntity;
     }
+
+
 }

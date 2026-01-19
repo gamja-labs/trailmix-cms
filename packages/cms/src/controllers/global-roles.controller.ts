@@ -9,7 +9,7 @@ import { GlobalRoleManager } from '../managers';
 import * as dto from '../dto/global-role.dto';
 import { type RequestPrincipal } from '../types';
 
-@Auth({ globalRoles: [trailmixModels.RoleValue.Admin] })
+@Auth({ requiredGlobalRoles: [trailmixModels.RoleValue.Admin] })
 @ApiTags('global-roles')
 @Controller('global-roles')
 export class GlobalRolesController {
