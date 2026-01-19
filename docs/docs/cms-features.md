@@ -65,16 +65,27 @@ export class AppAuthGuardHook implements AuthGuardHook {
 Then configure it in your module's providers array using the `provideAuthGuardHook` helper:
 
 ```typescript
-import { CmsModule, provideAuthGuardHook } from '@trailmix-cms/cms';
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { setupTrailmixCMS, provideAuthGuardHook, configuration as cmsConfiguration } from '@trailmix-cms/cms';
+import { configuration as databaseConfiguration } from '@trailmix-cms/db';
 import { AppAuthGuardHook } from './hooks/auth-guard.hook';
+
+const trailmixCMS = setupTrailmixCMS({
+    // ... other config
+});
 
 @Module({
     imports: [
-        CmsModule.forRoot({
-            // ... other config
+        ConfigModule.forRoot({
+            load: [databaseConfiguration, cmsConfiguration],
         }),
     ],
+    controllers: [
+        ...trailmixCMS.controllers,
+    ],
     providers: [
+        ...trailmixCMS.providers,
         provideAuthGuardHook(AppAuthGuardHook),
         // ... other providers
     ],
@@ -107,6 +118,219 @@ export class AppModule {}
 ```
 
 If no hook is provided, the default behavior is to always return `true`, allowing authentication to proceed.
+
+---
+
+# Organizations Feature
+
+The **organizations feature** enables multi-tenant support, allowing you to group accounts into organizations with organization-specific roles and permissions.
+
+## Overview
+
+When enabled, the organizations feature provides:
+
+- **Organization Management** - Create, update, and delete organizations
+- **Organization Roles** - Assign roles to accounts within organizations
+- **Organization Scoping** - Scope resources and permissions to specific organizations
+- **Authorization Service** - Check permissions within organization context
+
+## Enabling Organizations
+
+Enable organizations by setting `enableOrganizations: true` in your feature configuration:
+
+```typescript
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { setupTrailmixCMS, FeatureConfig, configuration as cmsConfiguration } from '@trailmix-cms/cms';
+import { configuration as databaseConfiguration } from '@trailmix-cms/db';
+
+const features: FeatureConfig = {
+    enableOrganizations: true,
+};
+
+const trailmixCMS = setupTrailmixCMS({
+    features,
+});
+
+@Module({
+    imports: [
+        ConfigModule.forRoot({
+            load: [databaseConfiguration, cmsConfiguration],
+        }),
+    ],
+    controllers: [
+        ...trailmixCMS.controllers,
+    ],
+    providers: [
+        ...trailmixCMS.providers,
+    ],
+})
+export class AppModule {}
+```
+
+## Custom Organization Setup
+
+You can provide custom setup logic for the organization collection (e.g., custom indexes):
+
+```typescript
+import { setupTrailmixCMS, FeatureConfig } from '@trailmix-cms/cms';
+import type { Collection } from 'mongodb';
+import { Organization } from '@trailmix-cms/models';
+
+const features: FeatureConfig = {
+    enableOrganizations: true,
+};
+
+const trailmixCMS = setupTrailmixCMS({
+    features,
+    entities: {
+        // Optional: Custom setup for organization collection
+        organizationSetup: async (collection: Collection<Organization.Entity>) => {
+            await collection.createIndex({ name: 1 }, { unique: true });
+            await collection.createIndex({ slug: 1 }, { unique: true, sparse: true });
+        },
+    },
+});
+```
+
+**Note**: The `organizationSetup` function is optional. If not provided, no custom setup will run.
+
+## Organization Delete Hook
+
+You can provide a hook that runs when an organization is deleted:
+
+```typescript
+import { Injectable } from '@nestjs/common';
+import { OrganizationDeleteHook } from '@trailmix-cms/cms';
+import { Organization } from '@trailmix-cms/models';
+
+@Injectable()
+export class AppOrganizationDeleteHook implements OrganizationDeleteHook {
+    async onDelete(organization: Organization.Entity): Promise<void> {
+        // Clean up organization-specific resources
+        // This hook runs before the organization is deleted
+    }
+}
+```
+
+Configure it in your module:
+
+```typescript
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { provideOrganizationDeleteHook, configuration as cmsConfiguration } from '@trailmix-cms/cms';
+import { configuration as databaseConfiguration } from '@trailmix-cms/db';
+
+@Module({
+    imports: [
+        ConfigModule.forRoot({
+            load: [databaseConfiguration, cmsConfiguration],
+        }),
+    ],
+    providers: [
+        provideOrganizationDeleteHook(AppOrganizationDeleteHook),
+    ],
+})
+export class AppModule {}
+```
+
+---
+
+# API Keys Feature
+
+The **API keys feature** enables programmatic access to your API using API keys instead of user authentication.
+
+## Overview
+
+When enabled, the API keys feature provides:
+
+- **API Key Management** - Create, list, and revoke API keys
+- **Scope-Based Access** - Control what API keys can access
+- **Secure Storage** - API keys are hashed before storage
+- **Automatic Generation** - Unique API keys are automatically generated
+
+## Enabling API Keys
+
+Enable API keys by setting `apiKeys.enabled: true` in your feature configuration:
+
+```typescript
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { setupTrailmixCMS, FeatureConfig, configuration as cmsConfiguration } from '@trailmix-cms/cms';
+import { configuration as databaseConfiguration } from '@trailmix-cms/db';
+import { ApiKeyScope } from '@trailmix-cms/models';
+
+const features: FeatureConfig = {
+    apiKeys: {
+        enabled: true,
+        scopes: [
+            ApiKeyScope.Account,
+            ApiKeyScope.Organization,
+            ApiKeyScope.Global,
+        ],
+    },
+};
+
+const trailmixCMS = setupTrailmixCMS({
+    features,
+});
+
+@Module({
+    imports: [
+        ConfigModule.forRoot({
+            load: [databaseConfiguration, cmsConfiguration],
+        }),
+    ],
+    controllers: [
+        ...trailmixCMS.controllers,
+    ],
+    providers: [
+        ...trailmixCMS.providers,
+    ],
+})
+export class AppModule {}
+```
+
+## API Key Scopes
+
+API keys can be scoped to different contexts:
+
+- **`ApiKeyScope.Account`** - Account-scoped API keys (limited to a specific account)
+- **`ApiKeyScope.Organization`** - Organization-scoped API keys (limited to a specific organization)
+- **`ApiKeyScope.Global`** - Global API keys (full access)
+
+The `scopes` array in the configuration determines which scopes are allowed when creating API keys.
+
+## What Gets Included
+
+When API keys are enabled, the following are automatically added:
+
+### Controllers
+- `ApiKeysController` - CRUD operations for API keys
+
+### Services
+- `ApiKeyService` - API key business logic and validation
+
+### Collections
+- `ApiKeyCollection` - API key data access
+
+## Using API Keys
+
+API keys are passed in the request headers. The exact header name depends on your configuration, but typically:
+
+```
+X-API-Key: your-api-key-here
+```
+
+The API key is validated and the associated account/organization context is made available to your controllers.
+
+## Security Considerations
+
+- API keys are hashed before storage (never stored in plain text)
+- Each API key is unique and automatically generated
+- API keys can be revoked at any time
+- Scope restrictions limit what each API key can access
+- Consider implementing rate limiting for API key requests
 
 ## Next Steps
 

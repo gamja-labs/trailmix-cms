@@ -17,8 +17,6 @@ const defaultCollectionConfig: CollectionConfig = {
     disableDefaultIndexes: false
 }
 
-
-
 export interface TrailmixCMSOptions<
     AccountEntity extends models.Account.Entity = models.Account.Entity,
     AccountDtoEntity = AccountEntity,
