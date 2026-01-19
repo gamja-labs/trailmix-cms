@@ -1,89 +1,89 @@
 {
-    "name": "@trailmix-cms/cms",
-    "version": "0.4.4",
-    "main": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/gamja-labs/trailmix-cms"
+  "name": "@trailmix-cms/cms",
+  "version": "0.7.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gamja-labs/trailmix-cms"
+  },
+  "scripts": {
+    "build": "tsc -b -v ./tsconfig.build.json",
+    "clean": "tsc -b ./tsconfig.build.json --clean",
+    "trace": "tsc --traceResolution",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
+  },
+  "dependencies": {
+    "@clerk/fastify": "^2.6.8",
+    "@nestjs/common": "^11.1.12",
+    "@nestjs/config": "^4.0.2",
+    "@nestjs/core": "^11.1.12",
+    "@nestjs/swagger": "^11.2.3",
+    "@trailmix-cms/db": "workspace:*",
+    "@trailmix-cms/models": "workspace:*",
+    "@trailmix-cms/utils": "workspace:*",
+    "envalid": "^8.1.1",
+    "mongodb": "^7.0.0",
+    "nestjs-zod": "^5.1.1",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^9.0.0",
+    "@nestjs/testing": "^11.0.1",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.10.1",
+    "babel-jest": "^30.2.0",
+    "dayjs": "^1.11.19",
+    "fastify": "5.6.1",
+    "jest": "^30.0.0",
+    "jest-util": "^30.2.0",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "5.9.3"
+  },
+  "peerDependencies": {
+    "@clerk/fastify": "^2.6.8",
+    "@nestjs/common": "^11.1.12",
+    "@nestjs/config": "^4.0.2",
+    "@trailmix-cms/db": "workspace:*",
+    "@trailmix-cms/models": "workspace:*",
+    "@trailmix-cms/utils": "workspace:*",
+    "mongodb": "^7.0.0",
+    "nestjs-zod": "^5.1.1",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "zod": "^4.1.12"
+  },
+  "publishConfig": {
+    "provenance": true
+  },
+  "jest": {
+    "rootDir": ".",
+    "preset": "ts-jest",
+    "transform": {
+      "^.+\\.(ts|tsx)?$": [
+        "ts-jest",
+        {
+          "tsconfig": {
+            "isolatedModules": true
+          }
+        }
+      ]
     },
-    "scripts": {
-        "build": "tsc -b -v ./tsconfig.build.json",
-        "clean": "tsc -b ./tsconfig.build.json --clean",
-        "trace": "tsc --traceResolution",
-        "test": "jest",
-        "test:watch": "jest --watch",
-        "test:cov": "jest --coverage",
-        "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1",
+      "^@test-utils/(.*)$": "<rootDir>/../test-utils/src/$1"
     },
-    "dependencies": {
-        "@clerk/fastify": "^2.6.8",
-        "@nestjs/common": "^11.1.12",
-        "@nestjs/config": "^4.0.2",
-        "@nestjs/core": "^11.1.12",
-        "@nestjs/swagger": "^11.2.3",
-        "@trailmix-cms/db": "workspace:*",
-        "@trailmix-cms/models": "workspace:*",
-        "@trailmix-cms/utils": "workspace:*",
-        "envalid": "^8.1.1",
-        "mongodb": "^7.0.0",
-        "nestjs-zod": "^5.1.1",
-        "reflect-metadata": "^0.2.2",
-        "rxjs": "^7.8.2",
-        "zod": "^4.1.12"
-    },
-    "devDependencies": {
-        "@faker-js/faker": "^9.0.0",
-        "@nestjs/testing": "^11.0.1",
-        "@types/jest": "^30.0.0",
-        "@types/node": "^24.10.1",
-        "babel-jest": "^30.2.0",
-        "dayjs": "^1.11.19",
-        "fastify": "5.6.1",
-        "jest": "^30.0.0",
-        "jest-util": "^30.2.0",
-        "ts-jest": "^29.2.5",
-        "ts-node": "^10.9.2",
-        "tsconfig-paths": "^4.2.0",
-        "typescript": "5.9.3"
-    },
-    "peerDependencies": {
-        "@clerk/fastify": "^2.6.8",
-        "@nestjs/common": "^11.1.12",
-        "@nestjs/config": "^4.0.2",
-        "@trailmix-cms/db": "workspace:*",
-        "@trailmix-cms/models": "workspace:*",
-        "@trailmix-cms/utils": "workspace:*",
-        "mongodb": "^7.0.0",
-        "nestjs-zod": "^5.1.1",
-        "reflect-metadata": "^0.2.2",
-        "rxjs": "^7.8.2",
-        "zod": "^4.1.12"
-    },
-    "publishConfig": {
-        "provenance": true
-    },
-    "jest": {
-        "rootDir": ".",
-        "preset": "ts-jest",
-        "transform": {
-            "^.+\\.(ts|tsx)?$": [
-                "ts-jest",
-                {
-                    "tsconfig": {
-                        "isolatedModules": true
-                    }
-                }
-            ]
-        },
-        "moduleNameMapper": {
-            "^@/(.*)$": "<rootDir>/src/$1",
-            "^@test-utils/(.*)$": "<rootDir>/../test-utils/src/$1"
-        },
-        "collectCoverageFrom": [
-            "src/**/*.(t|j)s"
-        ],
-        "coverageDirectory": "./coverage",
-        "testEnvironment": "node"
-    }
+    "collectCoverageFrom": [
+      "src/**/*.(t|j)s"
+    ],
+    "coverageDirectory": "./coverage",
+    "testEnvironment": "node"
+  }
 }
