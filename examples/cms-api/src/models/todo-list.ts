@@ -1,8 +1,9 @@
 import { z } from 'zod';
-import { Base } from '@trailmix-cms/models';
+import { baseEntitySchema, Codecs } from '@trailmix-cms/models';
 
-export const entitySchema = Base.baseEntitySchema.extend({
+export const entitySchema = baseEntitySchema.extend({
     name: z.string(),
+    organization_id: Codecs.ObjectId,
 }).meta({
     id: 'TodoList',
 });

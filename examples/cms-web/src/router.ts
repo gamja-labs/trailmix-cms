@@ -4,6 +4,8 @@ import type { RouteRecordRaw } from 'vue-router';
 export const RouteName = {
     Login: 'login',
     Dashboard: 'dashboard',
+    Admin: 'admin',
+    Organizations: 'organizations',
 } as const;
 
 export const authenticatedGuard = buildAuthenticatedGuard({
@@ -22,6 +24,16 @@ export const routes: RouteRecordRaw[] = [
                 path: '/',
                 name: RouteName.Dashboard,
                 component: () => import('@/views/authenticated/Dashboard.vue'),
+            },
+            {
+                path: '/admin',
+                name: RouteName.Admin,
+                component: () => import('@/views/authenticated/Admin.vue'),
+            },
+            {
+                path: '/organizations',
+                name: RouteName.Organizations,
+                component: () => import('@/views/authenticated/Organizations.vue'),
             },
         ],
     },

@@ -14,17 +14,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 🏗 Setup repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          fetch-tags: true
 
       - name: 📦 Enable Corepack
         run: corepack enable
 
       - name: 🏗 Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6
         with:
-          node-version: 24.x
+          node-version: 24
           cache: yarn
 
       - name: 📦 Install dependencies
@@ -33,7 +34,11 @@ jobs:
       - name: 🏗️ Verify Build
         run: yarn build
 
+      - name: 🧪 Test
+        run: yarn test
+
       - name: 🤜 Bump Please
-        uses: chriswoodle/bump-please-action@v1.0.1
+        uses: chriswoodle/bump-please-action@v1.2.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+

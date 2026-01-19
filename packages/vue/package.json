@@ -12,7 +12,8 @@
     "url": "https://github.com/gamja-labs/trailmix-cms"
   },
   "scripts": {
-    "build": "tsc -b && swc src -d dist --strip-leading-paths"
+    "build": "tsc -b && swc src -d dist --strip-leading-paths",
+    "clean": "tsc -b --clean && rm -rf dist"
   },
   "dependencies": {
     "@clerk/vue": "^1.17.1",

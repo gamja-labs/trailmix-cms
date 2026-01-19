@@ -3,13 +3,13 @@ import { baseEntitySchema } from '../base';
 import * as AuditContext from '../models/audit-context';
 import * as Codecs from '../utils/codecs';
 
-export const entitySchema = baseEntitySchema.extend({
+export const schema = baseEntitySchema.extend({
     entity_id: Codecs.ObjectId,
     entity_type: z.string(),
     action: z.enum(['create', 'update', 'delete']),
-    context: AuditContext.modelSchema,
+    context: AuditContext.schema,
 }).meta({
     id: 'Audit',
 });
 
-export type Entity = z.infer<typeof entitySchema>;
+export type Entity = z.infer<typeof schema>;

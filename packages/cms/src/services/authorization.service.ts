@@ -1,72 +1,132 @@
-import { Injectable, ExecutionContext, Logger, createParamDecorator, NotFoundException } from '@nestjs/common';
-import type { FastifyRequest } from 'fastify';
+import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import { ObjectId } from 'mongodb';
 import * as models from '@trailmix-cms/models';
-
-export interface AccountAuthorization {
-    account?: models.Account.Entity;
-    roles: (models.Role | string)[];
-}
-
-export type AuthorizableEntity = models.Authorization.Model & models.Publishable.Model;
+import { GlobalRoleService } from './global-role.service';
+import { OrganizationRoleService } from './organization-role.service';
+import { RequestPrincipal } from '../types';
+import * as trailmixModels from '@trailmix-cms/models';
+import { SecurityAuditCollection } from '../collections/security-audit.collection';
 
 @Injectable()
 export class AuthorizationService {
     private readonly logger = new Logger(AuthorizationService.name);
 
-    constructor() { }
+    constructor(
+        private readonly globalRoleService: GlobalRoleService,
+        private readonly organizationRoleService: OrganizationRoleService,
+        private readonly securityAuditCollection: SecurityAuditCollection,
+    ) { }
 
-    async validateAuthorization<T extends AuthorizableEntity>(accountAuthorization: AccountAuthorization, entity: T) {
-        const result = this.checkAccountAuthorizationOnEntity(accountAuthorization, entity);
-        if (!result) {
-            // TODO: security audit
-            throw new NotFoundException('Entity not found');
-        }
-        return result;
+    /**
+     * Check if a principal is a global admin
+     * @param principalId - The principal's ID
+     * @param principalType - The principal's type (Account or ApiKey)
+     * @returns True if the principal is a global admin, false otherwise
+     */
+    async isGlobalAdmin(principalId: ObjectId, principalType: models.Principal): Promise<boolean> {
+        const globalRoles = await this.globalRoleService.findOne({
+            principal_id: principalId,
+            principal_type: principalType,
+            role: models.RoleValue.Admin,
+        });
+        return !!globalRoles;
     }
 
-    checkAccountAuthorizationOnEntity<T extends AuthorizableEntity>(accountAuthorization: AccountAuthorization, entity: T) {
-        // console.log('checkAccountAuthorizationOnEntity', { accountAuthorization }, { entity });
-        const account = accountAuthorization.account;
 
-        if (accountAuthorization.roles.includes(models.Role.Admin)) {
+    async resolveOrganizationAuthorization(params: {
+        principal: RequestPrincipal,
+        rolesAllowList: string[],
+        principalTypeAllowList: models.Principal[],
+        organizationId: ObjectId,
+    }) {
+        const { principal, rolesAllowList, principalTypeAllowList, organizationId } = params;
+
+        const principal_id = principal.entity._id;
+        const principal_type = principal.principal_type;
+        const globalRoles = await this.globalRoleService.find({
+            principal_id,
+            principal_type
+        });
+        const isGlobalAdmin = globalRoles.some(role => role.role === models.RoleValue.Admin);
+
+        const organizationRoles = await this.organizationRoleService.find({
+            principal_id,
+            principal_type,
+            organization_id: organizationId,
+        });
+
+        const hasAccess = isGlobalAdmin ||
+            (
+                organizationRoles.some(role => {
+                    return rolesAllowList.includes(role.role);
+                }) &&
+                principalTypeAllowList.includes(principal_type)
+            );
+
+        return { hasAccess, isGlobalAdmin, globalRoles, organizationRoles };
+    }
+
+
+    async authorizeApiKeyAccessForPrincipal(principal: RequestPrincipal, apiKeyScopeType: trailmixModels.ApiKeyScope, apiKeyScopeId?: ObjectId): Promise<boolean> {
+        // Global admins have access to all API keys
+        const isGlobalAdmin = await this.isGlobalAdmin(principal.entity._id, principal.principal_type);
+        if (isGlobalAdmin) {
             return true;
         }
 
-        if (!entity.authorization) {
-            // Only admin can access entities that have no "authorization"
-            // TODO: security audit
-            this.logger.warn('Entity has no authorization', { entity });
-            return false;
+        switch (apiKeyScopeType) {
+            case trailmixModels.ApiKeyScope.Global: {
+                await this.securityAuditCollection.insertOne({
+                    event_type: trailmixModels.SecurityAuditEventType.UnauthorizedAccess,
+                    principal_id: principal.entity._id,
+                    principal_type: principal.principal_type,
+                    message: 'Unauthorized attempt to get global-scoped API key for non-global admins',
+                    source: AuthorizationService.name,
+                });
+                return false;
+            }
+            case trailmixModels.ApiKeyScope.Account: {
+                if (!apiKeyScopeId) {
+                    throw new Error('API key scope ID is required for account-scoped API keys');
+                }
+                if (!apiKeyScopeId.equals(principal.entity._id)) {
+                    await this.securityAuditCollection.insertOne({
+                        event_type: trailmixModels.SecurityAuditEventType.UnauthorizedAccess,
+                        principal_id: principal.entity._id,
+                        principal_type: principal.principal_type,
+                        message: 'Unauthorized attempt to get account-scoped API key for another principal',
+                        source: AuthorizationService.name,
+                    });
+                    return false;
+                }
+                return true;
+            }
+            case trailmixModels.ApiKeyScope.Organization: {
+                if (!apiKeyScopeId) {
+                    throw new Error('API key scope ID is required for organization-scoped API keys');
+                }
+                const requiredRoles = [trailmixModels.RoleValue.Admin, trailmixModels.RoleValue.Owner];
+                const accessResult = await this.resolveOrganizationAuthorization({
+                    principal,
+                    rolesAllowList: requiredRoles,
+                    principalTypeAllowList: [trailmixModels.Principal.Account],
+                    organizationId: apiKeyScopeId!,
+                });
+                if (!accessResult.hasAccess) {
+                    await this.securityAuditCollection.insertOne({
+                        event_type: trailmixModels.SecurityAuditEventType.UnauthorizedAccess,
+                        principal_id: principal.entity._id,
+                        principal_type: principal.principal_type,
+                        message: `Unauthorized attempt to get organization-scoped API key without ${requiredRoles} role on the organization ${apiKeyScopeId}`,
+                        source: AuthorizationService.name,
+                    });
+                    return false;
+                }
+                return true;
+            }
+            default: {
+                throw new Error(`Invalid scope type: ${apiKeyScopeType}`);
+            }
         }
-
-        // IF entity does not have a published property, it is published
-        if (entity.published === false) {
-            return false;
-        }
-
-        if (entity.authorization.public) {
-            return true;
-        }
-
-        if (entity.authorization.roles?.some(role => accountAuthorization.roles.includes(role))) {
-            return true;
-        }
-
-        if (account && entity.authorization.accountIds?.some(id => account._id.equals(id))) {
-            return true;
-        }
-        return false;
     }
 }
-
-export const AccountAuthorization = createParamDecorator(
-    (data: unknown, ctx: ExecutionContext) => {
-        const request = ctx.switchToHttp().getRequest<FastifyRequest>();
-
-        const accountAuthorization: AccountAuthorization = {
-            account: request.account,
-            roles: request.account?.roles ? request.account.roles.map(role => role as models.Role) : [],
-        }
-        return accountAuthorization;
-    },
-)

@@ -15,6 +15,17 @@ const { user } = useUser();
                     <router-link :to="{ name: RouteName.Dashboard }" class="logo-link">
                         <h1 class="logo">Todos</h1>
                     </router-link>
+                    <nav class="header-nav">
+                        <router-link :to="{ name: RouteName.Dashboard }" class="nav-link">
+                            Dashboard
+                        </router-link>
+                        <router-link :to="{ name: RouteName.Organizations }" class="nav-link">
+                            Organizations
+                        </router-link>
+                        <router-link :to="{ name: RouteName.Admin }" class="nav-link">
+                            Admin
+                        </router-link>
+                    </nav>
                 </div>
                 <div class="header-right">
                     <div class="user-info">
@@ -60,6 +71,32 @@ const { user } = useUser();
     display: flex;
     align-items: center;
     gap: 2rem;
+}
+
+.header-nav {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.nav-link {
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: calc(var(--radius) - 2px);
+    transition: all 0.2s;
+
+    &:hover {
+        color: hsl(var(--foreground));
+        background-color: hsl(var(--accent));
+    }
+
+    &.router-link-active {
+        color: hsl(var(--foreground));
+        background-color: hsl(var(--accent));
+    }
 }
 
 .logo-link {

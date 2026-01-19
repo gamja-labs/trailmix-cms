@@ -5,59 +5,79 @@ useHead({
     title: 'Todos | Trailmix',
 })
 
-import { ref, onMounted, computed, nextTick } from 'vue';
+import { ref, onMounted, computed, nextTick, watch } from 'vue';
 import { useApi } from '@/lib/api';
-import type { TodoList, TodoItemResponseDto, CreateTodoListDto, CreateTodoItemDto, UpdateTodoItemDto, AccountDto } from '@/client/Api';
+import type { TodoList, TodoItemResponseDto, CreateTodoListDto, CreateTodoItemDto, UpdateTodoItemDto, BaseAccount, Organization } from '@/client/Api';
 
 const { api } = useApi();
 
+const organizations = ref<Organization[]>([]);
+const selectedOrganizationId = ref<string | null>(null);
+const organizationsLoading = ref(false);
 const todoLists = ref<TodoList[]>([]);
 const todos = ref<TodoItemResponseDto[]>([]);
 const selectedListId = ref<string | null>(null);
 const loading = ref(false);
 const listsLoading = ref(false);
 const newTodoText = ref('');
-const showCompleted = ref(false);
 const editingTodoId = ref<string | null>(null);
 const editingText = ref('');
 const editInputRef = ref<HTMLInputElement | null>(null);
 const showCreateListDialog = ref(false);
 const newListName = ref('');
 const creatingList = ref(false);
-const accountInfo = ref<AccountDto | null>(null);
+const accountInfo = ref<BaseAccount | null>(null);
 const loadingAccountInfo = ref(false);
 
 const selectedList = computed(() => {
     return todoLists.value.find(list => list._id === selectedListId.value) || null;
 });
 
-const activeTodos = computed(() => {
-    return Array.isArray(todos.value) ? todos.value.filter(todo => !todo.completed) : [];
+const selectedOrganization = computed(() => {
+    return organizations.value.find(org => org._id === selectedOrganizationId.value) || null;
 });
 
-const completedTodos = computed(() => {
-    return Array.isArray(todos.value) ? todos.value.filter(todo => todo.completed) : [];
-});
-
-const displayedTodos = computed(() => {
-    if (showCompleted.value) {
-        return [...activeTodos.value, ...completedTodos.value];
+const loadOrganizations = async () => {
+    try {
+        organizationsLoading.value = true;
+        const response = await api.organizations.organizationsControllerGetOrganizations();
+        organizations.value = response.data.items || [];
+        
+        // If no organization is selected and we have organizations, select the first one
+        if (!selectedOrganizationId.value && organizations.value.length > 0) {
+            selectedOrganizationId.value = organizations.value[0]!._id;
+        }
+    } catch (error: any) {
+        console.error('Failed to load organizations:', error);
+        alert(error?.error?.message || 'Failed to load organizations');
+    } finally {
+        organizationsLoading.value = false;
     }
-    return activeTodos.value;
-});
+};
 
 const loadTodoLists = async () => {
+    if (!selectedOrganizationId.value) {
+        todoLists.value = [];
+        return;
+    }
+
     try {
         listsLoading.value = true;
-        const response = await api.todoLists.todoListControllerGetAllLists();
+        const response = await api.todoLists.todoListControllerGetAllLists({
+            organization_id: selectedOrganizationId.value,
+        });
         todoLists.value = response.data.items || [];
         
+        console.log('Todo lists:', todoLists.value);
         // If no list is selected and we have lists, select the first one
         if (!selectedListId.value && todoLists.value.length > 0) {
             selectedListId.value = todoLists.value[0]!._id;
+        } else if (todoLists.value.length === 0) {
+            selectedListId.value = null;
         }
-    } catch (error) {
+    } catch (error: any) {
         console.error('Failed to load todo lists:', error);
+        alert(error?.error?.message || 'Failed to load todo lists');
     } finally {
         listsLoading.value = false;
     }
@@ -72,10 +92,12 @@ const loadTodos = async (listId: string) => {
     try {
         loading.value = true;
         const response = await api.todoItems.todoItemControllerGetItemsByListId({ list_id: listId });
-        // Ensure we always have an array
-        todos.value = Array.isArray(response.data) ? response.data : [];
-    } catch (error) {
+        todos.value = response.data.items || [];
+
+        console.log('Todos:', todos.value);
+    } catch (error: any) {
         console.error('Failed to load todos:', error);
+        alert(error?.error?.message || 'Failed to load todos');
         todos.value = [];
     } finally {
         loading.value = false;
@@ -83,7 +105,8 @@ const loadTodos = async (listId: string) => {
 };
 
 const createTodoList = async () => {
-    if (!newListName.value.trim()) {
+    if (!newListName.value.trim() || !selectedOrganizationId.value) {
+        alert('Please select an organization and enter a list name');
         return;
     }
 
@@ -91,6 +114,7 @@ const createTodoList = async () => {
         creatingList.value = true;
         const createListData: CreateTodoListDto = {
             name: newListName.value.trim(),
+            organization_id: selectedOrganizationId.value,
         };
         const response = await api.todoLists.todoListControllerCreateList(createListData);
         todoLists.value.push(response.data);
@@ -224,7 +248,7 @@ const getAccountInfo = async () => {
         const response = await api.account.accountControllerInfo();
         accountInfo.value = response.data;
         console.log('Account info:', response.data);
-        alert(`Account Info:\nID: ${response.data._id}\nUser ID: ${response.data.user_id}\nName: ${response.data.name}`);
+        alert(`Account Info:\nID: ${response.data._id}\nUser ID: ${response.data.user_id}`);
     } catch (error: any) {
         console.error('Failed to get account info:', error);
         alert(error?.error?.message || 'Failed to get account info');
@@ -233,28 +257,66 @@ const getAccountInfo = async () => {
     }
 };
 
+// Watch for organization changes and reload todo lists
+watch(selectedOrganizationId, async (newOrgId) => {
+    if (newOrgId) {
+        await loadTodoLists();
+    } else {
+        todoLists.value = [];
+        todos.value = [];
+        selectedListId.value = null;
+    }
+});
+
 onMounted(async () => {
-    await loadTodoLists();
-    if (selectedListId.value) {
-        await loadTodos(selectedListId.value);
+    await loadOrganizations();
+    if (selectedOrganizationId.value) {
+        await loadTodoLists();
+        if (selectedListId.value) {
+            await loadTodos(selectedListId.value);
+        }
     }
 });
 </script>
 
 <template>
     <div class="todos-dashboard">
-        <div class="todos-layout">
+        <!-- Organization Selector -->
+        <div class="organization-selector">
+            <label for="organization-select" class="org-label">Organization</label>
+            <select
+                id="organization-select"
+                v-model="selectedOrganizationId"
+                class="org-select"
+                :disabled="organizationsLoading"
+            >
+                <option :value="null">Select an organization...</option>
+                <option
+                    v-for="org in organizations"
+                    :key="org._id"
+                    :value="org._id"
+                >
+                    {{ org.name }}
+                </option>
+            </select>
+            <div v-if="organizationsLoading" class="loading-small">Loading...</div>
+            <div v-else-if="organizations.length === 0" class="empty-state-small">
+                <span class="text-muted">No organizations available</span>
+            </div>
+        </div>
+
+        <div v-if="selectedOrganizationId" class="todos-layout">
             <!-- Sidebar with Todo Lists -->
             <aside class="todos-sidebar">
                 <div class="sidebar-header">
-                    <h2 class="sidebar-title">Todo Lists</h2>
+                    <h2 class="sidebar-title">Lists</h2>
                     <button class="btn btn-primary btn-sm" @click="showCreateListDialog = true">
-                        + New List
+                        + New
                     </button>
                 </div>
-                <div v-if="listsLoading" class="loading-small">Loading lists...</div>
+                <div v-if="listsLoading" class="loading-small">Loading...</div>
                 <div v-else-if="todoLists.length === 0" class="empty-state-small">
-                    <p class="text-muted">No lists yet</p>
+                    <span class="text-muted">No lists</span>
                 </div>
                 <nav v-else class="lists-nav">
                     <button
@@ -273,19 +335,6 @@ onMounted(async () => {
             <main class="todos-main">
                 <div class="todos-header">
                     <h1 class="todos-title">{{ selectedList?.name || 'Select a list' }}</h1>
-                    <div class="todos-controls">
-                        <button 
-                            class="btn btn-outline btn-sm" 
-                            @click="getAccountInfo" 
-                            :disabled="loadingAccountInfo"
-                        >
-                            {{ loadingAccountInfo ? 'Loading...' : 'Test Account Info' }}
-                        </button>
-                        <label class="toggle-label">
-                            <input type="checkbox" v-model="showCompleted" />
-                            <span>Show Completed</span>
-                        </label>
-                    </div>
                 </div>
 
                 <div v-if="!selectedListId" class="empty-state">
@@ -294,33 +343,31 @@ onMounted(async () => {
 
                 <template v-else>
                     <!-- Add Todo Form -->
-                    <div class="add-todo-form card">
-                        <div class="form-group">
-                            <input
-                                v-model="newTodoText"
-                                type="text"
-                                placeholder="What needs to be done?"
-                                class="todo-input"
-                                @keyup.enter="createTodo"
-                            />
-                        </div>
-                        <button class="btn btn-primary" @click="createTodo" :disabled="loading || !newTodoText.trim()">
-                            Add Todo
+                    <div class="add-todo-form">
+                        <input
+                            v-model="newTodoText"
+                            type="text"
+                            placeholder="Add a todo..."
+                            class="todo-input"
+                            @keyup.enter="createTodo"
+                        />
+                        <button class="btn btn-primary btn-sm" @click="createTodo" :disabled="loading || !newTodoText.trim()">
+                            Add
                         </button>
                     </div>
 
                     <!-- Todos List -->
-                    <div v-if="loading && displayedTodos.length === 0" class="loading">
-                        Loading todos...
+                    <div v-if="loading && todos.length === 0" class="loading">
+                        Loading...
                     </div>
-                    <div v-else-if="displayedTodos.length === 0" class="empty-state">
-                        <p class="text-muted">No todos yet. Add one above to get started!</p>
+                    <div v-else-if="todos.length === 0" class="empty-state">
+                        <p class="text-muted">No todos yet</p>
                     </div>
                     <div v-else class="todos-list">
                         <div
-                            v-for="todo in displayedTodos"
+                            v-for="todo in todos"
                             :key="todo._id"
-                            class="todo-item card"
+                            class="todo-item"
                             :class="{ 'todo-completed': todo.completed }"
                         >
                             <div class="todo-content">
@@ -359,7 +406,7 @@ onMounted(async () => {
                                         Edit
                                     </button>
                                     <button
-                                        class="btn btn-destructive btn-sm"
+                                        class="btn btn-ghost btn-sm text-destructive"
                                         @click="deleteTodo(todo._id)"
                                     >
                                         Delete
@@ -370,13 +417,11 @@ onMounted(async () => {
                     </div>
 
                     <!-- Summary -->
-                    <div v-if="displayedTodos.length > 0" class="todos-summary">
-                        <p class="text-muted">
-                            {{ activeTodos.length }} active, {{ completedTodos.length }} completed
-                        </p>
-                    </div>
                 </template>
             </main>
+        </div>
+        <div v-else class="empty-state">
+            <p class="text-muted">Please select an organization to view todo lists.</p>
         </div>
 
         <!-- Create List Dialog -->
@@ -416,19 +461,60 @@ onMounted(async () => {
     width: 100%;
 }
 
+.organization-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding: 0.75rem 1rem;
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: calc(var(--radius) - 2px);
+}
+
+.org-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: hsl(var(--muted-foreground));
+    white-space: nowrap;
+}
+
+.org-select {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border-radius: calc(var(--radius) - 2px);
+    border: 1px solid hsl(var(--input));
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-size: 0.875rem;
+    transition: all 0.2s;
+    min-width: 0;
+
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+        border-color: hsl(var(--ring));
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
 .todos-layout {
     display: flex;
-    gap: 2rem;
+    gap: 1.5rem;
     align-items: flex-start;
 }
 
 .todos-sidebar {
-    width: 250px;
+    width: 220px;
     flex-shrink: 0;
     background: hsl(var(--card));
     border: 1px solid hsl(var(--border));
-    border-radius: var(--radius);
-    padding: 1.5rem;
+    border-radius: calc(var(--radius) - 2px);
+    padding: 0.75rem;
     position: sticky;
     top: 2rem;
 }
@@ -437,39 +523,44 @@ onMounted(async () => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
     gap: 0.5rem;
+    padding: 0.5rem;
 }
 
 .sidebar-title {
-    font-size: 1.125rem;
+    font-size: 0.875rem;
     font-weight: 600;
     margin: 0;
+    color: hsl(var(--muted-foreground));
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .loading-small,
 .empty-state-small {
     text-align: center;
-    padding: 1rem;
-    font-size: 0.875rem;
+    padding: 0.75rem 0.5rem;
+    font-size: 0.8125rem;
 }
 
 .lists-nav {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.125rem;
 }
 
 .list-item {
-    padding: 0.75rem 1rem;
+    padding: 0.5rem 0.75rem;
     text-align: left;
     border: none;
     background: transparent;
     color: hsl(var(--foreground));
     border-radius: calc(var(--radius) - 2px);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.15s;
     font-size: 0.875rem;
+    font-weight: 400;
 
     &:hover {
         background-color: hsl(var(--accent));
@@ -489,46 +580,24 @@ onMounted(async () => {
 }
 
 .todos-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    gap: 1rem;
-    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
 }
 
 .todos-title {
-    font-size: 2rem;
-    font-weight: 700;
+    font-size: 1.5rem;
+    font-weight: 600;
     margin: 0;
-}
-
-.todos-controls {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.toggle-label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-    font-size: 0.875rem;
-    color: hsl(var(--muted-foreground));
-
-    input[type="checkbox"] {
-        cursor: pointer;
-    }
-
-    &:hover {
-        color: hsl(var(--foreground));
-    }
+    color: hsl(var(--foreground));
 }
 
 .add-todo-form {
-    margin-bottom: 2rem;
-    padding: 1.5rem;
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    padding: 0.75rem;
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: calc(var(--radius) - 2px);
 }
 
 .form-group {
@@ -548,14 +617,14 @@ onMounted(async () => {
 }
 
 .todo-input {
-    width: 100%;
-    padding: 0.75rem;
+    flex: 1;
+    padding: 0.5rem 0.75rem;
     border-radius: calc(var(--radius) - 2px);
     border: 1px solid hsl(var(--input));
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
-    font-size: 1rem;
-    transition: all 0.2s;
+    font-size: 0.875rem;
+    transition: all 0.15s;
 
     &:focus {
         outline: none;
@@ -571,19 +640,25 @@ onMounted(async () => {
 .loading,
 .empty-state {
     text-align: center;
-    padding: 4rem 2rem;
+    padding: 3rem 2rem;
+    font-size: 0.875rem;
 }
 
 .todos-list {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    margin-bottom: 2rem;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
 }
 
 .todo-item {
-    padding: 1rem 1.5rem;
-    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: calc(var(--radius) - 2px);
+    transition: all 0.15s;
 
     &.todo-completed {
         opacity: 0.6;
@@ -595,24 +670,25 @@ onMounted(async () => {
     }
 
     &:hover {
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+        border-color: hsl(var(--ring) / 0.3);
     }
 }
 
 .todo-content {
     display: flex;
-    align-items: flex-start;
-    gap: 1rem;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+    min-width: 0;
 }
 
 .todo-checkbox-container {
     flex-shrink: 0;
-    padding-top: 0.25rem;
 }
 
 .todo-checkbox {
-    width: 1.25rem;
-    height: 1.25rem;
+    width: 1rem;
+    height: 1rem;
     cursor: pointer;
     accent-color: hsl(var(--primary));
 }
@@ -627,12 +703,12 @@ onMounted(async () => {
 }
 
 .todo-label {
-    font-size: 1rem;
-    font-weight: 500;
+    font-size: 0.875rem;
+    font-weight: 400;
     color: hsl(var(--foreground));
     cursor: text;
     word-wrap: break-word;
-    margin-bottom: 0.25rem;
+    line-height: 1.5;
 }
 
 .todo-edit-form {
@@ -643,13 +719,13 @@ onMounted(async () => {
 
 .todo-edit-input {
     width: 100%;
-    padding: 0.5rem;
+    padding: 0.375rem 0.5rem;
     border-radius: calc(var(--radius) - 2px);
     border: 1px solid hsl(var(--input));
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
-    font-size: 1rem;
-    transition: all 0.2s;
+    font-size: 0.875rem;
+    transition: all 0.15s;
 
     &:focus {
         outline: none;
@@ -660,14 +736,32 @@ onMounted(async () => {
 
 .todo-actions {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.25rem;
     flex-shrink: 0;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+.todo-item:hover .todo-actions {
+    opacity: 1;
+}
+
+.text-destructive {
+    color: hsl(var(--destructive));
+    
+    &:hover {
+        color: hsl(var(--destructive));
+        background-color: hsl(var(--destructive) / 0.1);
+    }
+}
+
+.text-sm {
+    font-size: 0.8125rem;
 }
 
 .todos-summary {
     text-align: center;
-    padding: 1rem;
-    border-top: 1px solid hsl(var(--border));
-    margin-top: 2rem;
+    padding: 0.75rem;
+    margin-top: 1rem;
 }
 </style>

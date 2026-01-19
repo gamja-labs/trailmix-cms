@@ -11,6 +11,11 @@ export const configuration = () => {
             devDefault: 3000,
             desc: 'The port the app is running on',
         }),
+        SERVICE_HOST: str({
+            desc: 'The host the app is running on',
+            example: 'https://api.example.com',
+            default: 'http://localhost:3000',
+        }),
         GENERATE_SPEC: bool({
             default: false,
             desc: 'Generates OpenAPI spec file in the docs directory and exits the application.',

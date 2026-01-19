@@ -10,6 +10,9 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const config: UserConfig & { ssgOptions?: ViteSSGOptions } = {
+    server: {
+        port: 5174,
+    },
     plugins: [
         vue(),
         vueDevTools(),

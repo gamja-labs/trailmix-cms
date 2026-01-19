@@ -1,15 +1,14 @@
-import { Controller, Get, Param, Logger, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Param, Logger } from '@nestjs/common';
 import { ApiOperation, ApiTags, ApiOkResponse, ApiNotFoundResponse, ApiParam } from '@nestjs/swagger';
-import { ObjectId } from 'mongodb';
 
-import { Auth } from '../decorators/auth.decorator';
-import { Role } from '@trailmix-cms/models';
+import { RoleValue } from '@trailmix-cms/models';
 import { DatabaseService, Collections } from '@trailmix-cms/db';
-
-import * as dto from '../dto/audit.dto';
 import { validateObjectId } from '@trailmix-cms/utils';
 
-@Auth({ roles: [Role.Admin] })
+import { Auth } from '../decorators/auth.decorator';
+import * as dto from '../dto/audit.dto';
+
+@Auth({ globalRoles: [RoleValue.Admin] })
 @ApiTags('audit')
 @Controller('audit')
 export class AuditController {

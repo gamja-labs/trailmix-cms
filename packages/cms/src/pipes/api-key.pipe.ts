@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { BaseEntityByIdPipe } from '@trailmix-cms/utils';
-import { FileCollection } from '../collections/file.collection';
+import { ApiKeyCollection } from '../collections/api-key.collection';
 import * as models from '@trailmix-cms/models';
 
 @Injectable()
-export class FileByIdPipe extends BaseEntityByIdPipe<models.File.Entity> {
+export class ApiKeyByIdPipe extends BaseEntityByIdPipe<models.ApiKey.Entity> {
     constructor(
-        protected readonly collection: FileCollection
+        protected readonly collection: ApiKeyCollection
     ) {
         super(collection);
     }

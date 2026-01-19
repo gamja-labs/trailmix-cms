@@ -1,57 +1,61 @@
-import { Logger, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
+import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { ConfigModule } from '@nestjs/config';
+import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
+import type { Collection } from 'mongodb';
 
-import { DatabaseModule } from '@trailmix-cms/db';
+import { ApiKeyScope } from '@trailmix-cms/models';
+import { collectionFactory, configuration as databaseConfiguration } from '@trailmix-cms/db';
+import { provideAuthGuardHook, provideOrganizationDeleteHook, FeatureConfig, setupTrailmixCMS, configuration as cmsConfiguration } from '@trailmix-cms/cms';
 
 import { controllers } from './controllers';
 import { collections } from './collections';
 import { services } from './services';
 import { CollectionName } from './constants';
 import { configuration } from './config';
-import { ConfigModule } from '@nestjs/config';
-import { collectionFactory } from '@trailmix-cms/db';
-import { CmsModule, provideAuthGuardHook, Controllers } from '@trailmix-cms/cms';
-
-import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
-
-import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
-
 import * as models from './models';
-import type { Collection } from 'mongodb';
-import * as AccountDto from './dto/account.dto';
-import { AppAuthGuardHook } from './hooks/auth-guard.hook';
+import { AppAuthGuardHook, AppOrganizationDeleteHook } from './hooks';
+
+const features: FeatureConfig = {
+    enableOrganizations: true,
+    apiKeys: {
+        enabled: true,
+        scopes: [
+            ApiKeyScope.Account,
+            ApiKeyScope.Global,
+            ApiKeyScope.Organization,
+        ],
+    },
+};
+
+const trailmixCMS = setupTrailmixCMS({
+    entities: {
+        accountSchema: models.Account.entitySchema,
+        accountSetup: async (collection: Collection<models.Account.Entity>) => {
+            await collection.createIndex({ name: 1 }, { sparse: true });
+        },
+        organizationSchema: models.Organization.entitySchema,
+        organizationSetup: async (collection: Collection<models.Organization.Entity>) => {
+            await collection.createIndex({ name: 1 }, { sparse: true });
+        },
+    },
+    features,
+});
 
 @Module({
     imports: [
         ConfigModule.forRoot({
-            load: [configuration],
+            load: [configuration, databaseConfiguration, cmsConfiguration],
         }),
-        DatabaseModule,
-        CmsModule.forRoot({
-            entities: {
-                accountSchema: models.Account.entitySchema,
-                accountDtoSchema: AccountDto.entitySchema,
-                accountDto: AccountDto.AccountDto,
-                accountSetup: async (collection: Collection<models.Account.Entity>) => {
-                    await collection.createIndex({ name: 1 }, { sparse: true });
-                },
-                accountMapEntity: (entity: models.Account.Entity) => {
-                    const dto = {
-                        ...entity,
-                        roles: undefined,
-                    } as AccountDto.Entity;
-                    return dto;
-                },
-            },
-        }),
-        // CacheModule,
     ],
     controllers: [
         ...controllers,
-        Controllers.buildAccountController<models.Account.Entity, AccountDto.Entity>(AccountDto.AccountDto),
-        Controllers.AuditController,
+        ...trailmixCMS.controllers,
     ],
     providers: [
+        ...trailmixCMS.providers,
         provideAuthGuardHook(AppAuthGuardHook),
+        provideOrganizationDeleteHook(AppOrganizationDeleteHook),
         {
             provide: APP_PIPE,
             useClass: ZodValidationPipe,

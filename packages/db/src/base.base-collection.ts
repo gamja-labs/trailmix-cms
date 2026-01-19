@@ -1,12 +1,12 @@
 import { Filter, Collection, ClientSession, FindOptions, ObjectId, UpdateFilter, Document, WithId, OptionalUnlessRequiredId, FindOneAndUpdateOptions } from 'mongodb';
-import { Base } from '@trailmix-cms/models';
+import { BaseEntity } from '@trailmix-cms/models';
 import { Creatable, ensureCreated } from './utils';
 import { InternalCollectionName } from './constants';
 import { DatabaseService } from './database.service';
 import { ZodType } from 'zod';
 import merge from 'lodash.merge';
 
-export abstract class BaseCollection<T extends Base.BaseEntity & Document> {
+export abstract class BaseCollection<T extends BaseEntity & Document> {
     protected abstract readonly collectionName: InternalCollectionName | string;
     protected abstract readonly entitySchema: ZodType<OptionalUnlessRequiredId<T>>;
 

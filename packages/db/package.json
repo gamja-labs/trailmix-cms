@@ -13,7 +13,7 @@
     "trace": "tsc --traceResolution"
   },
   "dependencies": {
-    "@nestjs/common": "^11.1.9",
+    "@nestjs/common": "^11.1.12",
     "@nestjs/config": "^4.0.2",
     "@trailmix-cms/models": "workspace:*",
     "envalid": "^8.1.1",
@@ -29,7 +29,7 @@
     "typescript": "5.9.3"
   },
   "peerDependencies": {
-    "@nestjs/common": "^11.1.9",
+    "@nestjs/common": "^11.1.12",
     "@nestjs/config": "^4.0.2",
     "@trailmix-cms/models": "workspace:*",
     "mongodb": "^7.0.0",

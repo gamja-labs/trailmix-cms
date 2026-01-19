@@ -1,6 +1,5 @@
 import { Controller, Get, Post, Put, Delete, Param, Body, Logger, NotFoundException, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags, ApiOkResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiParam } from '@nestjs/swagger';
-import { TodoListService } from '../services/todo-list.service';
 import {
     CreateTodoItemDto,
     UpdateTodoItemDto,
@@ -12,7 +11,9 @@ import { TodoItemByIdPipe } from '../pipes';
 import { TodoItem } from '../models';
 import { TodoItemCollection, TodoListCollection } from '../collections';
 import { AuditContext } from '@trailmix-cms/models';
-import { Auth } from '@trailmix-cms/cms';
+import { Auth, PrincipalContext, AuditContext as AuditContextDecorator } from '@trailmix-cms/cms';
+import { type RequestPrincipal, Collections as CMSCollections, Services } from '@trailmix-cms/cms';
+import * as models from '@trailmix-cms/models';
 
 @Auth()
 @ApiTags('todo-items')
@@ -22,8 +23,28 @@ export class TodoItemController {
 
     constructor(
         private readonly todoListCollection: TodoListCollection,
-        private readonly todoItemCollection: TodoItemCollection
+        private readonly todoItemCollection: TodoItemCollection,
+        private readonly authorizationService: Services.AuthorizationService,
     ) { }
+
+    private async verifyTodoListAccess(todoListId: any, principal: RequestPrincipal): Promise<void> {
+        const todoList = await this.todoListCollection.get(todoListId);
+        if (!todoList) {
+            throw new NotFoundException('Todo list not found');
+        }
+
+        // Verify user has access to the organization
+        const organizationRole = await this.authorizationService.resolveOrganizationAuthorization({
+            principal,
+            rolesAllowList: [models.RoleValue.User],
+            principalTypeAllowList: [models.Principal.Account, models.Principal.ApiKey],
+            organizationId: todoList.organization_id,
+        });
+
+        if (!organizationRole) {
+            throw new NotFoundException('Todo list not found or access denied');
+        }
+    }
 
     @Post()
     @ApiOperation({ summary: 'Create a new todo item in a list' })
@@ -34,15 +55,10 @@ export class TodoItemController {
     @ApiNotFoundResponse({ description: 'Todo list not found.' })
     async createItem(
         @Body() createDto: CreateTodoItemDto,
+        @PrincipalContext() principal: RequestPrincipal,
+        @AuditContextDecorator() auditContext: AuditContext.Model,
     ): Promise<TodoItemResponseDto> {
-        const todoList = await this.todoListCollection.get(createDto.list_id);
-        if (!todoList) {
-            throw new NotFoundException('Todo list not found');
-        }
-        const auditContext: AuditContext.Model = {
-            system: false,
-            anonymous: true,
-        }
+        await this.verifyTodoListAccess(createDto.list_id, principal);
         this.logger.log(`Creating todo item in list: ${createDto.list_id}`);
         const result = await this.todoItemCollection.insertOne(
             createDto,
@@ -55,16 +71,17 @@ export class TodoItemController {
     @ApiOperation({ summary: 'Get all todo items in a list' })
     @ApiOkResponse({
         description: 'List of all todo items in the list.',
-        type: [TodoItemResponseDto],
+        type: TodoItemListResponseDto,
     })
     @ApiNotFoundResponse({ description: 'Todo list not found.' })
-    async getItemsByListId(@Query() query: TodoItemListQueryDto): Promise<TodoItemListResponseDto> {
+    async getItemsByListId(
+        @Query() query: TodoItemListQueryDto,
+        @PrincipalContext() principal: RequestPrincipal,
+    ): Promise<TodoItemListResponseDto> {
+        await this.verifyTodoListAccess(query.list_id, principal);
         const todoList = await this.todoListCollection.get(query.list_id);
-        if (!todoList) {
-            throw new NotFoundException('Todo list not found');
-        }
-        this.logger.log(`Getting all items for list: ${todoList._id}`);
-        const result = await this.todoItemCollection.find({ list_id: todoList._id });
+        this.logger.log(`Getting all items for list: ${todoList!._id}`);
+        const result = await this.todoItemCollection.find({ list_id: todoList!._id });
         return {
             items: result,
             count: result.length,
@@ -79,9 +96,11 @@ export class TodoItemController {
         type: TodoItemResponseDto,
     })
     @ApiNotFoundResponse({ description: 'Todo item not found.' })
-    getItemById(
+    async getItemById(
         @Param('itemId', TodoItemByIdPipe) item: TodoItem.Entity,
-    ): TodoItemResponseDto {
+        @PrincipalContext() principal: RequestPrincipal,
+    ): Promise<TodoItemResponseDto> {
+        await this.verifyTodoListAccess(item.list_id, principal);
         return item;
     }
 
@@ -93,15 +112,14 @@ export class TodoItemController {
         type: TodoItemResponseDto,
     })
     @ApiNotFoundResponse({ description: 'Todo item not found.' })
-    updateItem(
+    async updateItem(
         @Param('itemId', TodoItemByIdPipe) item: TodoItem.Entity,
         @Body() updateDto: UpdateTodoItemDto,
+        @PrincipalContext() principal: RequestPrincipal,
+        @AuditContextDecorator() auditContext: AuditContext.Model,
     ): Promise<TodoItemResponseDto> {
+        await this.verifyTodoListAccess(item.list_id, principal);
         this.logger.log(`Updating todo item: ${item._id}`);
-        const auditContext: AuditContext.Model = {
-            system: false,
-            anonymous: true,
-        }
         return this.todoItemCollection.findOneAndUpdate({ _id: item._id }, {
             $set: updateDto
         }, auditContext);
@@ -114,12 +132,11 @@ export class TodoItemController {
     @ApiNotFoundResponse({ description: 'Todo item not found.' })
     async deleteItem(
         @Param('itemId', TodoItemByIdPipe) item: TodoItem.Entity,
+        @PrincipalContext() principal: RequestPrincipal,
+        @AuditContextDecorator() auditContext: AuditContext.Model,
     ): Promise<void> {
+        await this.verifyTodoListAccess(item.list_id, principal);
         this.logger.log(`Deleting todo item: ${item._id}`);
-        const auditContext: AuditContext.Model = {
-            system: false,
-            anonymous: true,
-        }
         await this.todoItemCollection.deleteOne(item._id, auditContext);
     }
 }

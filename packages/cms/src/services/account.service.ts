@@ -1,5 +1,4 @@
-import { Injectable, ExecutionContext, Logger, createParamDecorator, NotFoundException } from '@nestjs/common';
-import * as models from '@trailmix-cms/models';
+import { Injectable, Logger } from '@nestjs/common';
 import { AccountCollection } from '../collections';
 
 @Injectable()
@@ -32,7 +31,6 @@ export class AccountService {
                 user_id: userId,
             },
             $setOnInsert: {
-                roles: [models.Role.User],
             },
         }, {
             system: true,

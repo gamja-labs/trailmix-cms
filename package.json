@@ -4,8 +4,10 @@
   "private": true,
   "packageManager": "yarn@4.12.0",
   "scripts": {
+    "test": "yarn workspaces foreach --topological --all --exclude cms-api --exclude simple-todo-api --exclude cms-web run test",
     "build": "yarn workspaces foreach --topological --all --exclude cms-api --exclude simple-todo-api --exclude cms-web run build",
-    "ci": "yarn build"
+    "ci": "yarn build",
+    "clean:all": "yarn workspaces foreach --all run clean"
   },
   "workspaces": [
     "packages/*",

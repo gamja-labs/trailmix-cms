@@ -12,7 +12,7 @@ const collectionName = InternalCollectionName.Audit;
 export class AuditCollection implements OnModuleInit {
     private readonly logger = new Logger(this.constructor.name);
     public readonly collectionName = collectionName;
-    public readonly entitySchema = Audit.entitySchema;
+    public readonly entitySchema = Audit.schema;
 
     constructor(
         @DocumentCollection(collectionName) protected readonly collection: Collection<Record>
@@ -35,7 +35,7 @@ export class AuditCollection implements OnModuleInit {
 
     async insertOne(params: Creatable<Record>, session?: ClientSession) {
         const entity = ensureCreated<Audit.Entity>(params);
-        const encoded = !!Audit.entitySchema.encode(entity);
+        const encoded = !!Audit.schema.encode(entity);
         if (!encoded) {
             throw new Error('Failed to encode audit record');
         }

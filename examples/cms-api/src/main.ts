@@ -15,6 +15,9 @@ import { AppConfig } from './config';
 
 import { cleanupOpenApiDoc } from 'nestjs-zod';
 import { Logger } from '@nestjs/common';
+import { Utils } from '@trailmix-cms/db';
+import { CMSCollectionName } from '@trailmix-cms/cms';
+import { OpenApiStudioModule } from '@openapi-studio/nestjs';
 
 async function bootstrap() {
     const logger = new Logger()
@@ -42,22 +45,48 @@ async function bootstrap() {
 
     const configService = app.get(ConfigService<AppConfig>);
 
+    // Check if ApiKey feature is enabled by checking if the collection is registered
+    // We need to initialize the app first to check for providers
+    await app.init();
+    let apiKeyEnabled = false;
+    try {
+        const apiKeyCollectionToken = Utils.buildCollectionToken(CMSCollectionName.ApiKey);
+        app.get(apiKeyCollectionToken, { strict: false });
+        apiKeyEnabled = true;
+    } catch {
+        // ApiKey collection not registered, feature is disabled
+        apiKeyEnabled = false;
+    }
+
+    const documentBuilder = new DocumentBuilder()
+        .setTitle('Trailmix CMS Example API')
+        .setDescription(`API (build ${configService.get('BUILD_ID')})`)
+        .setLicense(
+            'Apache 2.0',
+            'https://www.apache.org/licenses/LICENSE-2.0.html',
+        )
+        .setVersion(pkg.version)
+        .addBearerAuth();
+    
+    if (apiKeyEnabled) {
+        documentBuilder.addApiKey({ type: 'apiKey', in: 'header', name: 'x-api-key' }, 'api-key');
+    }
+
     const document = cleanupOpenApiDoc(
-        SwaggerModule.createDocument(app, new DocumentBuilder()
-            .setTitle('Trailmix CMS Example API')
-            .setDescription(`API (build ${configService.get('BUILD_ID')})`)
-            .setLicense(
-                'Apache 2.0',
-                'https://www.apache.org/licenses/LICENSE-2.0.html',
-            )
-            .setVersion(pkg.version)
-            .addBearerAuth()
-            .build()),
-        { version: "3.0" });
+        SwaggerModule.createDocument(app, documentBuilder.build()),
+        { version: "3.0" }
+    );
 
 
-    SwaggerModule.setup('api-docs', app, document);
-    SwaggerModule.setup('/', app, document);
+    // SwaggerModule.setup('api-docs', app, document);
+    // SwaggerModule.setup('/', app, document, {
+    //     jsonDocumentUrl: '/openapi.json',
+    // });
+
+    OpenApiStudioModule.setup('/',app, document, {
+        serviceHost: configService.get('SERVICE_HOST'),
+        clerkPublishableKey: configService.get('CLERK_PUBLISHABLE_KEY'),
+    });
 
     if (configService.get('GENERATE_SPEC')) {
         logger.log('Generating OpenAPI Spec...');
@@ -76,8 +105,6 @@ async function bootstrap() {
 
     // const migrationService = app.get(MigrationService);
     // await migrationService.run();
-
-    await app.init();
     await app.listen({
         port: configService.get('PORT'),
         host: '0.0.0.0',

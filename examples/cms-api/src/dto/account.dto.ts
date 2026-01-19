@@ -3,7 +3,6 @@ import * as models from '../models';
 import { createZodDto } from 'nestjs-zod';
 
 export const entitySchema = models.Account.entitySchema.omit({
-    roles: true,
 }).meta({
     id: 'AccountDto',
 });

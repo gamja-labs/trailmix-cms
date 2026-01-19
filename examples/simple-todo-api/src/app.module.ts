@@ -1,6 +1,6 @@
 import { Logger, Module } from '@nestjs/common';
 
-import { DatabaseModule } from '@trailmix-cms/db';
+import { createDatabaseProviders, collectionFactory, configuration as databaseConfiguration } from '@trailmix-cms/db';
 
 import { controllers } from './controllers';
 import { collections } from './collections';
@@ -8,18 +8,17 @@ import { services } from './services';
 import { CollectionName } from './constants';
 import { configuration } from './config';
 import { ConfigModule } from '@nestjs/config';
-import { collectionFactory } from '@trailmix-cms/db';
 
 import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 
+const databaseProviders = createDatabaseProviders();
+
 @Module({
     imports: [
         ConfigModule.forRoot({
-            load: [configuration],
+            load: [configuration, databaseConfiguration],
         }),
-        DatabaseModule,
-        // CacheModule,
     ],
     controllers: [
         ...controllers,
@@ -36,7 +35,8 @@ import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
         ...services,
         // ...pipes,
         ...collections,
-        ...Object.values(CollectionName).map(collectionName => collectionFactory(collectionName))
+        ...Object.values(CollectionName).map(collectionName => collectionFactory(collectionName)),
+        ...databaseProviders,
     ],
 })
 export class AppModule { }

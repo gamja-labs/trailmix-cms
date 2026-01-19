@@ -1,5 +1,5 @@
 import { Filter, Collection, ClientSession, FindOptions, ObjectId, UpdateFilter, Document, WithId, OptionalUnlessRequiredId, FindOneAndUpdateOptions } from 'mongodb';
-import { Audit, AuditContext, Base } from '@trailmix-cms/models';
+import { Audit, AuditContext, BaseEntity } from '@trailmix-cms/models';
 import { Creatable, ensureCreated } from './utils';
 import { InternalCollectionName } from './constants';
 import { AuditCollection } from './collections/audit.collection';
@@ -7,7 +7,7 @@ import { DatabaseService } from './database.service';
 import { ZodType } from 'zod';
 import merge from 'lodash.merge';
 
-export abstract class AuditedCollection<T extends Base.BaseEntity & Document> {
+export abstract class AuditedCollection<T extends BaseEntity & Document> {
     protected abstract readonly collectionName: InternalCollectionName | string;
     protected abstract readonly entitySchema: ZodType<OptionalUnlessRequiredId<T>>;
 
@@ -30,7 +30,7 @@ export abstract class AuditedCollection<T extends Base.BaseEntity & Document> {
     }
 
     async findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T>, auditContext: AuditContext.Model, session?: ClientSession) {
-        const encoded = !!AuditContext.modelSchema.encode(auditContext);
+        const encoded = !!AuditContext.schema.encode(auditContext);
         if (!encoded) {
             throw new Error('Failed to encode audit context');
         }
@@ -58,7 +58,7 @@ export abstract class AuditedCollection<T extends Base.BaseEntity & Document> {
     }
 
     async deleteMany(query: Filter<T>, auditContext: AuditContext.Model, session?: ClientSession) {
-        const encoded = !!AuditContext.modelSchema.encode(auditContext);
+        const encoded = !!AuditContext.schema.encode(auditContext);
         if (!encoded) {
             throw new Error('Failed to encode audit context');
         }
@@ -82,7 +82,7 @@ export abstract class AuditedCollection<T extends Base.BaseEntity & Document> {
     }
 
     async deleteOne(entityId: ObjectId, auditContext: AuditContext.Model, session?: ClientSession) {
-        const encoded = !!AuditContext.modelSchema.encode(auditContext);
+        const encoded = !!AuditContext.schema.encode(auditContext);
         if (!encoded) {
             throw new Error('Failed to encode audit context');
         }
@@ -103,7 +103,7 @@ export abstract class AuditedCollection<T extends Base.BaseEntity & Document> {
     }
 
     async insertOne(params: Creatable<T>, auditContext: AuditContext.Model, session?: ClientSession) {
-        const encoded = !!AuditContext.modelSchema.encode(auditContext);
+        const encoded = !!AuditContext.schema.encode(auditContext);
         if (!encoded) {
             throw new Error('Failed to encode audit context');
         }
@@ -130,7 +130,7 @@ export abstract class AuditedCollection<T extends Base.BaseEntity & Document> {
     }
 
     async upsertOne(query: Filter<T>, update: UpdateFilter<T>, auditContext: AuditContext.Model, session?: ClientSession) {
-        const encoded = !!AuditContext.modelSchema.encode(auditContext);
+        const encoded = !!AuditContext.schema.encode(auditContext);
         if (!encoded) {
             throw new Error('Failed to encode audit context');
         }

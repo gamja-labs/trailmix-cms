@@ -1,0 +1,36 @@
+{
+    "extends": "./tsconfig.json",
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "test",
+        "dist",
+        "**/*spec.ts"
+    ],
+    "compilerOptions": {
+        "rootDir": "./src",
+        "outDir": "./dist",
+        "noEmit": false,
+        "declaration": true,
+        "declarationMap": true,
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "./src/*"
+            ]
+        }
+    },
+    "references": [
+        {
+            "path": "../models"
+        },
+        {
+            "path": "../db"
+        },
+        {
+            "path": "../utils"
+        }
+    ]
+}
