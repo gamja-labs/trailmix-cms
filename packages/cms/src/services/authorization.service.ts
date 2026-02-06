@@ -1,4 +1,4 @@
-import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException, Optional } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import * as models from '@trailmix-cms/models';
 import { GlobalRoleService } from './global-role.service';
@@ -13,8 +13,8 @@ export class AuthorizationService {
 
     constructor(
         private readonly globalRoleService: GlobalRoleService,
-        private readonly organizationRoleService: OrganizationRoleService,
         private readonly securityAuditCollection: SecurityAuditCollection,
+        @Optional() private readonly organizationRoleService?: OrganizationRoleService,
     ) { }
 
     /**
@@ -48,6 +48,10 @@ export class AuthorizationService {
             principal_type
         });
         const isGlobalAdmin = globalRoles.some(role => role.role === models.RoleValue.Admin);
+
+        if (!this.organizationRoleService) {
+            throw new Error('OrganizationRoleService is not available. Organizations feature must be enabled to use resolveOrganizationAuthorization.');
+        }
 
         const organizationRoles = await this.organizationRoleService.find({
             principal_id,

@@ -172,6 +172,39 @@ describe('AuthorizationService', () => {
         };
         const organizationId = new ObjectId();
 
+        it('throws error when OrganizationRoleService is not available (ensuring organizations feature must be enabled)', async () => {
+            // Create a service instance without OrganizationRoleService
+            const moduleWithoutOrgService: TestingModule = await Test.createTestingModule({
+                providers: [
+                    AuthorizationService,
+                    {
+                        provide: GlobalRoleService,
+                        useValue: {
+                            findOne: jest.fn(),
+                            find: jest.fn().mockResolvedValue([]),
+                        },
+                    },
+                    {
+                        provide: SecurityAuditCollection,
+                        useValue: {
+                            insertOne: jest.fn().mockResolvedValue(undefined),
+                        },
+                    },
+                ],
+            }).compile();
+
+            const serviceWithoutOrgService = moduleWithoutOrgService.get<AuthorizationService>(AuthorizationService);
+
+            await expect(
+                serviceWithoutOrgService.resolveOrganizationAuthorization({
+                    principal: accountPrincipal,
+                    rolesAllowList: [trailmixModels.RoleValue.Admin],
+                    principalTypeAllowList: [trailmixModels.Principal.Account],
+                    organizationId,
+                })
+            ).rejects.toThrow('OrganizationRoleService is not available. Organizations feature must be enabled to use resolveOrganizationAuthorization.');
+        });
+
         it('returns hasAccess true when principal is a global admin (ensuring global admins have access to all organizations)', async () => {
             const adminGlobalRole = TestUtils.Models.createGlobalRoleModel({
                 principal_id: principalId,
