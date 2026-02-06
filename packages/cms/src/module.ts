@@ -65,6 +65,7 @@ export function setupTrailmixCMS<
         Services.AccountService,
         Services.AuthService,
         Services.GlobalRoleService,
+        Services.AuthorizationService,
         Managers.GlobalRoleManager,
 
         // MongoDB Collections
@@ -86,7 +87,7 @@ export function setupTrailmixCMS<
         ],
 
         // Features
-        ...(options?.features?.enableOrganizations ? [Services.OrganizationService, Services.OrganizationRoleService, Managers.OrganizationRoleManager, Managers.OrganizationManager, Services.AuthorizationService, Collections.OrganizationCollection] : []),
+        ...(options?.features?.enableOrganizations ? [Services.OrganizationService, Services.OrganizationRoleService, Managers.OrganizationRoleManager, Managers.OrganizationManager, Collections.OrganizationCollection] : []),
         ...(options?.features?.apiKeys?.enabled ? [Services.ApiKeyService, Collections.ApiKeyCollection] : []),
 
         // Account
