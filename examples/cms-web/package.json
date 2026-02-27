@@ -15,7 +15,7 @@
   "devDependencies": {
     "@clerk/themes": "^2.4.41",
     "@clerk/vue": "^1.17.1",
-    "@trailmix-cms/vue": "^0.7.4",
+    "@trailmix-cms/vue": "workspace:*",
     "@tsconfig/node24": "^24.0.3",
     "@types/node": "^24.10.1",
     "@unhead/vue": "^2.0.19",

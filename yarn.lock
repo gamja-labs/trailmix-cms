@@ -3213,7 +3213,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@trailmix-cms/vue@npm:^0.7.4, @trailmix-cms/vue@workspace:packages/vue":
+"@trailmix-cms/vue@workspace:*, @trailmix-cms/vue@workspace:packages/vue":
   version: 0.0.0-use.local
   resolution: "@trailmix-cms/vue@workspace:packages/vue"
   dependencies:
@@ -5305,7 +5305,7 @@ __metadata:
   dependencies:
     "@clerk/themes": "npm:^2.4.41"
     "@clerk/vue": "npm:^1.17.1"
-    "@trailmix-cms/vue": "npm:^0.7.4"
+    "@trailmix-cms/vue": "workspace:*"
     "@tsconfig/node24": "npm:^24.0.3"
     "@types/node": "npm:^24.10.1"
     "@unhead/vue": "npm:^2.0.19"
