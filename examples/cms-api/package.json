@@ -36,7 +36,7 @@
         "@trailmix-cms/utils": "workspace:*",
         "bson": "^7.2.0",
         "envalid": "^8.1.1",
-        "fastify": "5.6.1",
+        "fastify": "5.7.4",
         "mongodb": "^7.1.0",
         "morgan": "^1.10.1",
         "nestjs-zod": "^5.1.1",
