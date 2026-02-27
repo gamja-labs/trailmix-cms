@@ -8,9 +8,9 @@ export const AUTH_OPTIONS_KEY = 'authOptions';
 
 export interface AuthOptions {
     allowAnonymous: boolean;
-    requiredGlobalRoles: trailmixModels.RoleValue[];
+    requiredGlobalRoles: (trailmixModels.RoleValue | string)[];
     requiredPrincipalTypes: trailmixModels.Principal[];
-    requiredApiKeyScopes: trailmixModels.ApiKeyScope[];
+    requiredApiKeyScopes: (trailmixModels.ApiKeyScope | string)[];
 }
 
 export function Auth({ requiredGlobalRoles = [], allowAnonymous = false, requiredPrincipalTypes = [trailmixModels.Principal.Account], requiredApiKeyScopes = [] }: Partial<AuthOptions> = {}) {

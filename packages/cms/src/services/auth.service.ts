@@ -42,7 +42,7 @@ export class AuthService {
             allowAnonymous: boolean,
             requiredPrincipalTypes: trailmixModels.Principal[],
             requiredGlobalRoles: (trailmixModels.RoleValue | string)[],
-            requiredApiKeyScopes: trailmixModels.ApiKeyScope[],
+            requiredApiKeyScopes: (trailmixModels.ApiKeyScope | string)[],
         },
         requestUrl: string,
     ): Promise<AuthResult> {
