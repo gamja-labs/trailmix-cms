@@ -11,3 +11,4 @@ export * from './utils/provider-helpers';
 export * as Services from './services';
 export * as Controllers from './controllers';
 export * as Collections from './collections';
+export * as Managers from './managers';

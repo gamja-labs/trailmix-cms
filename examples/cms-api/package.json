@@ -22,28 +22,28 @@
         "test:e2e": "jest --config ./test/jest-e2e.json"
     },
     "dependencies": {
-        "@clerk/fastify": "^2.6.8",
+        "@clerk/fastify": "^2.6.27",
         "@fastify/static": "^8.3.0",
-        "@nestjs/common": "^11.1.12",
-        "@nestjs/config": "^4.0.2",
-        "@nestjs/core": "^11.1.12",
-        "@nestjs/platform-fastify": "^11.1.8",
-        "@nestjs/swagger": "^11.2.1",
+        "@nestjs/common": "^11.1.14",
+        "@nestjs/config": "^4.0.3",
+        "@nestjs/core": "^11.1.14",
+        "@nestjs/platform-fastify": "^11.1.14",
+        "@nestjs/swagger": "^11.2.6",
         "@openapi-studio/nestjs": "^0.6.2",
         "@trailmix-cms/cms": "workspace:*",
         "@trailmix-cms/db": "workspace:*",
         "@trailmix-cms/models": "workspace:*",
         "@trailmix-cms/utils": "workspace:*",
-        "bson": "^7.0.0",
+        "bson": "^7.2.0",
         "envalid": "^8.1.1",
         "fastify": "5.6.1",
-        "mongodb": "^7.0.0",
+        "mongodb": "^7.1.0",
         "morgan": "^1.10.1",
         "nestjs-zod": "^5.1.1",
         "reflect-metadata": "^0.2.2",
         "rxjs": "^7.8.1",
         "swagger-typescript-api": "^13.2.16",
-        "zod": "^4.1.12"
+        "zod": "^4.3.6"
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3.2.0",
@@ -53,7 +53,7 @@
         "@nestjs/testing": "^11.0.1",
         "@types/jest": "^30.0.0",
         "@types/morgan": "^1.9.10",
-        "@types/node": "^22.10.7",
+        "@types/node": "^24.10.1",
         "@types/supertest": "^6.0.2",
         "globals": "^16.0.0",
         "jest": "^30.0.0",
@@ -64,7 +64,8 @@
         "ts-loader": "^9.5.2",
         "ts-node": "^10.9.2",
         "tsconfig-paths": "^4.2.0",
-        "typescript": "^5.7.3"
+        "typescript": "5.9.3",
+        "webpack": "^5.105.3"
     },
     "jest": {
         "moduleFileExtensions": [

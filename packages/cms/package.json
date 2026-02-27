@@ -17,24 +17,26 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
   },
   "dependencies": {
-    "@clerk/fastify": "^2.6.8",
-    "@nestjs/common": "^11.1.12",
-    "@nestjs/config": "^4.0.2",
-    "@nestjs/core": "^11.1.12",
-    "@nestjs/swagger": "^11.2.3",
+    "@clerk/fastify": "^2.6.27",
+    "@nestjs/common": "^11.1.14",
+    "@nestjs/config": "^4.0.3",
+    "@nestjs/core": "^11.1.14",
+    "@nestjs/swagger": "^11.2.6",
     "@trailmix-cms/db": "workspace:*",
     "@trailmix-cms/models": "workspace:*",
     "@trailmix-cms/utils": "workspace:*",
     "envalid": "^8.1.1",
-    "mongodb": "^7.0.0",
+    "mongodb": "^7.1.0",
     "nestjs-zod": "^5.1.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
-    "zod": "^4.1.12"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@babel/core": "^7.29.0",
     "@faker-js/faker": "^9.0.0",
     "@nestjs/testing": "^11.0.1",
+    "@types/babel__core": "^7",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.10.1",
     "babel-jest": "^30.2.0",
@@ -48,17 +50,17 @@
     "typescript": "5.9.3"
   },
   "peerDependencies": {
-    "@clerk/fastify": "^2.6.8",
-    "@nestjs/common": "^11.1.12",
-    "@nestjs/config": "^4.0.2",
+    "@clerk/fastify": "^2.6.27",
+    "@nestjs/common": "^11.1.14",
+    "@nestjs/config": "^4.0.3",
     "@trailmix-cms/db": "workspace:*",
     "@trailmix-cms/models": "workspace:*",
     "@trailmix-cms/utils": "workspace:*",
-    "mongodb": "^7.0.0",
+    "mongodb": "^7.1.0",
     "nestjs-zod": "^5.1.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
-    "zod": "^4.1.12"
+    "zod": "^4.3.6"
   },
   "publishConfig": {
     "provenance": true

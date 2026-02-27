@@ -13,15 +13,15 @@
     "trace": "tsc --traceResolution"
   },
   "dependencies": {
-    "@nestjs/common": "^11.1.12",
-    "@nestjs/config": "^4.0.2",
+    "@nestjs/common": "^11.1.14",
+    "@nestjs/config": "^4.0.3",
     "@trailmix-cms/models": "workspace:*",
     "envalid": "^8.1.1",
     "lodash.merge": "^4.6.2",
-    "mongodb": "^7.0.0",
+    "mongodb": "^7.1.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
-    "zod": "^4.1.12"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/lodash.merge": "^4.6.9",
@@ -29,13 +29,13 @@
     "typescript": "5.9.3"
   },
   "peerDependencies": {
-    "@nestjs/common": "^11.1.12",
-    "@nestjs/config": "^4.0.2",
+    "@nestjs/common": "^11.1.14",
+    "@nestjs/config": "^4.0.3",
     "@trailmix-cms/models": "workspace:*",
-    "mongodb": "^7.0.0",
+    "mongodb": "^7.1.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
-    "zod": "^4.1.12"
+    "zod": "^4.3.6"
   },
   "publishConfig": {
     "provenance": true
