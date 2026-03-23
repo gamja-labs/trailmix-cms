@@ -3102,7 +3102,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trailmix-cms/cms@workspace:*, @trailmix-cms/cms@workspace:packages/cms":
+"@trailmix-cms/cms@workspace:^0.8.3, @trailmix-cms/cms@workspace:packages/cms":
   version: 0.0.0-use.local
   resolution: "@trailmix-cms/cms@workspace:packages/cms"
   dependencies:
@@ -3150,7 +3150,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@trailmix-cms/db@workspace:*, @trailmix-cms/db@workspace:packages/db":
+"@trailmix-cms/db@workspace:*, @trailmix-cms/db@workspace:^0.8.3, @trailmix-cms/db@workspace:packages/db":
   version: 0.0.0-use.local
   resolution: "@trailmix-cms/db@workspace:packages/db"
   dependencies:
@@ -3177,7 +3177,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@trailmix-cms/models@workspace:*, @trailmix-cms/models@workspace:packages/models":
+"@trailmix-cms/models@workspace:*, @trailmix-cms/models@workspace:^0.8.3, @trailmix-cms/models@workspace:packages/models":
   version: 0.0.0-use.local
   resolution: "@trailmix-cms/models@workspace:packages/models"
   dependencies:
@@ -3187,7 +3187,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@trailmix-cms/utils@workspace:*, @trailmix-cms/utils@workspace:packages/utils":
+"@trailmix-cms/utils@workspace:*, @trailmix-cms/utils@workspace:^0.8.3, @trailmix-cms/utils@workspace:packages/utils":
   version: 0.0.0-use.local
   resolution: "@trailmix-cms/utils@workspace:packages/utils"
   dependencies:
@@ -5283,10 +5283,10 @@ __metadata:
     "@nestjs/swagger": "npm:^11.2.6"
     "@nestjs/testing": "npm:^11.0.1"
     "@openapi-studio/nestjs": "npm:^0.6.2"
-    "@trailmix-cms/cms": "workspace:*"
-    "@trailmix-cms/db": "workspace:*"
-    "@trailmix-cms/models": "workspace:*"
-    "@trailmix-cms/utils": "workspace:*"
+    "@trailmix-cms/cms": "workspace:^0.8.3"
+    "@trailmix-cms/db": "workspace:^0.8.3"
+    "@trailmix-cms/models": "workspace:^0.8.3"
+    "@trailmix-cms/utils": "workspace:^0.8.3"
     "@types/jest": "npm:^30.0.0"
     "@types/morgan": "npm:^1.9.10"
     "@types/node": "npm:^24.10.1"
@@ -10208,10 +10208,10 @@ __metadata:
     "@nestjs/schematics": "npm:^11.0.0"
     "@nestjs/swagger": "npm:^11.2.6"
     "@nestjs/testing": "npm:^11.0.1"
-    "@trailmix-cms/cms": "workspace:*"
-    "@trailmix-cms/db": "workspace:*"
-    "@trailmix-cms/models": "workspace:*"
-    "@trailmix-cms/utils": "workspace:*"
+    "@trailmix-cms/cms": "workspace:^0.8.3"
+    "@trailmix-cms/db": "workspace:^0.8.3"
+    "@trailmix-cms/models": "workspace:^0.8.3"
+    "@trailmix-cms/utils": "workspace:^0.8.3"
     "@types/jest": "npm:^30.0.0"
     "@types/morgan": "npm:^1.9.10"
     "@types/node": "npm:^24.10.1"
