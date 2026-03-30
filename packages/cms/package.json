@@ -27,7 +27,7 @@
     "@trailmix-cms/utils": "workspace:*",
     "envalid": "^8.1.1",
     "mongodb": "^7.1.0",
-    "nestjs-zod": "^5.1.1",
+    "nestjs-zod": "^5.2.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
     "zod": "^4.3.6"
@@ -35,7 +35,7 @@
   "devDependencies": {
     "@babel/core": "^7.29.0",
     "@faker-js/faker": "^9.0.0",
-    "@nestjs/testing": "^11.0.1",
+    "@nestjs/testing": "^11.1.17",
     "@types/babel__core": "^7",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.10.1",
@@ -57,7 +57,7 @@
     "@trailmix-cms/models": "workspace:*",
     "@trailmix-cms/utils": "workspace:*",
     "mongodb": "^7.1.0",
-    "nestjs-zod": "^5.1.1",
+    "nestjs-zod": "^5.2.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
     "zod": "^4.3.6"

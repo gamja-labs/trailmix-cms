@@ -18,7 +18,7 @@
     "bson": "^7.2.0",
     "fastify": "5.8.2",
     "morgan": "^1.10.1",
-    "nestjs-zod": "^5.1.1",
+    "nestjs-zod": "^5.2.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
     "zod": "^4.3.6"
@@ -31,7 +31,7 @@
     "@nestjs/common": "^11.1.17",
     "@nestjs/core": "^11.1.17",
     "fastify": "5.8.2",
-    "nestjs-zod": "^5.1.1",
+    "nestjs-zod": "^5.2.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
     "zod": "^4.3.6"
