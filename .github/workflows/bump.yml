@@ -9,36 +9,37 @@ on:
       - main
 
 jobs:
-  bump:
-    name: Bump packages
+  build:
+    name: 🏗️ Build
     runs-on: ubuntu-latest
     steps:
-      - name: 🏗 Setup repo
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           fetch-tags: true
+      - uses: ./.github/actions/setup
+      - run: yarn build
 
-      - name: 📦 Enable Corepack
-        run: corepack enable
-
-      - name: 🏗 Setup Node
-        uses: actions/setup-node@v6
+  test:
+    name: 🧪 Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
         with:
-          node-version: 24
-          cache: yarn
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: ./.github/actions/setup
+      - run: yarn test
 
-      - name: 📦 Install dependencies
-        run: yarn install --immutable
-
-      - name: 🏗️ Verify Build
-        run: yarn build
-
-      - name: 🧪 Test
-        run: yarn test
-
-      - name: 🤜 Bump Please
-        uses: chriswoodle/bump-please-action@v1.2.0
+  bump:
+    name: 🤜 Bump packages
+    needs: [build, test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: chriswoodle/bump-please-action@v1.2.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-
