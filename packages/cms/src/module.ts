@@ -12,6 +12,7 @@ import * as Services from './services';
 import * as Managers from './managers';
 import { type FeatureConfig } from './types';
 import { Controllers } from '.';
+import { AuthGuard } from './auth.guard';
 
 const defaultCollectionConfig: CollectionConfig = {
     disableDefaultIndexes: false
@@ -54,6 +55,8 @@ export function setupTrailmixCMS<
     OrganizationDtoEntity
 >) {
     const providers = [
+        // Auth Guard
+        AuthGuard,
         // Database Library Providers
         ...createDatabaseProviders(),
 

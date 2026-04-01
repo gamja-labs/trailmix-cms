@@ -57,6 +57,10 @@ jest.mock('@/managers', () => ({
     OrganizationManager: class OrganizationManager { },
 }));
 
+jest.mock('@/auth.guard', () => ({
+    AuthGuard: class AuthGuard { },
+}));
+
 jest.mock('@/controllers', () => {
     const AccountController = class AccountController { };
     const AuditsController = class AuditsController { };

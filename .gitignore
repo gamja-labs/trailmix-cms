@@ -32,3 +32,5 @@ schema.gql
 spec.json
 
 *.tgz
+
+.claude/settings.local.json
