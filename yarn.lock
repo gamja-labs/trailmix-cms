@@ -5508,7 +5508,7 @@ __metadata:
     "@vitejs/plugin-vue": "npm:^6.0.2"
     "@vue/tsconfig": "npm:^0.8.1"
     beasties: "npm:^0.3.5"
-    dotenv: "npm:^17.2.3"
+    dotenv: "npm:^17.3.1"
     pinia: "npm:^3.0.4"
     sass-embedded: "npm:^1.93.3"
     typescript: "npm:5.9.3"
@@ -6052,6 +6052,13 @@ __metadata:
   version: 16.6.1
   resolution: "dotenv@npm:16.6.1"
   checksum: 10c0/15ce56608326ea0d1d9414a5c8ee6dcf0fffc79d2c16422b4ac2268e7e2d76ff5a572d37ffe747c377de12005f14b3cc22361e79fc7f1061cce81f77d2c973dc
+  languageName: node
+  linkType: hard
+
+"dotenv@npm:^17.3.1":
+  version: 17.3.1
+  resolution: "dotenv@npm:17.3.1"
+  checksum: 10c0/c78e0c2d5a549c751e544cc60e2b95e7cb67e0c551f42e094d161c6b297aa44b630a3c2dcacf5569e529a6c2a6b84e2ab9be8d37b299d425df5a18b81ce4a35f
   languageName: node
   linkType: hard
 
