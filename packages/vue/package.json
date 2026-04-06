@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "@swc/cli": "^0.7.9",
-    "@swc/core": "^1.15.3",
+    "@swc/core": "^1.15.24",
     "typescript": "5.9.3",
     "vue-router": "^4.6.3"
   },
