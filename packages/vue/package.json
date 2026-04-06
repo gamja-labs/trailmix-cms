@@ -22,7 +22,7 @@
   "devDependencies": {
     "@swc/cli": "^0.7.9",
     "@swc/core": "^1.15.3",
-    "typescript": "5.9.3",
+    "typescript": "6.0.2",
     "vue-router": "^4.6.3"
   },
   "peerDependencies": {

@@ -26,7 +26,7 @@
   "devDependencies": {
     "@types/lodash.merge": "^4.6.9",
     "@types/node": "^24.10.1",
-    "typescript": "5.9.3"
+    "typescript": "6.0.2"
   },
   "peerDependencies": {
     "@nestjs/common": "^11.1.18",
