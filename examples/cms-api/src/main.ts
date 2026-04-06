@@ -89,11 +89,11 @@ async function bootstrap() {
     });
 
     if (configService.get('GENERATE_SPEC')) {
-        logger.log('Generating OpenAPI Spec...');
-        const output = path.resolve(__filename, '../../docs/');
+        const output = path.resolve(__dirname, '../docs/');
+        logger.log(`Generating OpenAPI Spec to ${output}...`);
         fs.mkdirSync(output, { recursive: true });
         fs.writeFileSync(path.resolve(output, 'api-json.json'), JSON.stringify(document));
-        logger.log('Generating OpenAPI Spec complete.');
+        logger.log(`Generating OpenAPI Spec complete.`);
         app.close();
         return;
     }

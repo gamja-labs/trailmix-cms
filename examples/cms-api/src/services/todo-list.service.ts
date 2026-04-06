@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ObjectId } from 'bson';
-import { TodoListCollection } from 'src/collections/todo-list.collection';
-import { TodoItemCollection } from 'src/collections/todo-item.collection';
+import { TodoListCollection } from '../collections/todo-list.collection';
+import { TodoItemCollection } from '../collections/todo-item.collection';
 import { AuditContext } from '@trailmix-cms/models';
 import { DatabaseService } from '@trailmix-cms/db';
 

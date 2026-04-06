@@ -16,8 +16,8 @@
     "clean": "tsc -b --clean && rm -rf dist"
   },
   "dependencies": {
-    "@clerk/vue": "^1.17.1",
-    "vue": "^3.5.25"
+    "@clerk/vue": "^2.0.8",
+    "vue": "^3.5.32"
   },
   "devDependencies": {
     "@swc/cli": "^0.7.9",
@@ -26,8 +26,8 @@
     "vue-router": "^4.6.3"
   },
   "peerDependencies": {
-    "@clerk/vue": "^1.17.1",
-    "vue": "^3.5.25"
+    "@clerk/vue": "^2.0.8",
+    "vue": "^3.5.32"
   },
   "publishConfig": {
     "provenance": true
