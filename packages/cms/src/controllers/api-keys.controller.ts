@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Delete, Body, Param, Query, Optional } from '@nestjs/common';
-import { ApiOperation, ApiTags, ApiOkResponse, ApiCreatedResponse, ApiParam } from '@nestjs/swagger';
+import { ApiOperation, ApiTags, ApiOkResponse, ApiParam } from '@nestjs/swagger';
+import { ZodResponse } from 'nestjs-zod';
 import * as trailmixModels from '@trailmix-cms/models';
 
 import { Auth, AuditContext, PrincipalContext } from '../decorators';
@@ -18,33 +19,33 @@ export class ApiKeysController {
 
     @Post()
     @ApiOperation({ summary: 'Create a new API key' })
-    @ApiCreatedResponse({ description: 'API key created successfully.' })
+    @ZodResponse({ status: 201, description: 'API key created successfully.', type: dto.ApiKeyResponseDto })
     async createApiKey(
         @Body() body: dto.CreateApiKeyDto,
         @PrincipalContext() principal: RequestPrincipal,
         @AuditContext() auditContext: trailmixModels.AuditContext.Model,
-    ): Promise<trailmixModels.ApiKey.Entity> {
+    ) {
         return await this.apiKeyService.createApiKey(body, principal, auditContext);
     }
 
     @Get()
     @ApiOperation({ summary: 'Get all API keys' })
-    @ApiOkResponse({ description: 'API keys found.', type: dto.ApiKeyListResponseDto })
+    @ZodResponse({ status: 200, description: 'API keys found.', type: dto.ApiKeyListResponseDto })
     async getApiKeys(
         @PrincipalContext() principal: RequestPrincipal,
         @Query() queryParams: dto.ApiKeyListQueryDto,
-    ): Promise<dto.ApiKeyListResponseDto> {
+    ) {
         return await this.apiKeyService.getApiKeys(principal, queryParams);
     }
 
     @Get(':id')
     @ApiParam({ name: 'id', description: 'API key ID' })
     @ApiOperation({ summary: 'Get an API key by ID' })
-    @ApiOkResponse({ description: 'API key found.' })
+    @ZodResponse({ status: 200, description: 'API key found.', type: dto.ApiKeyResponseDto })
     async getApiKey(
         @Param('id', ApiKeyByIdPipe) apiKey: trailmixModels.ApiKey.Entity,
         @PrincipalContext() principal: RequestPrincipal,
-    ): Promise<trailmixModels.ApiKey.Entity> {
+    ) {
         return await this.apiKeyService.getApiKey(apiKey, principal);
     }
 

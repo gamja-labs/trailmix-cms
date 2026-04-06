@@ -7,15 +7,16 @@ export const GetSecurityAuditsQuerySchema = z.object({
     principal_type: z.enum(Object.values(Principal)).optional(),
     event_type: z.enum(Object.values(SecurityAuditEventType)).optional(),
 });
-
-export class GetSecurityAuditsQueryDto extends createZodDto(GetSecurityAuditsQuerySchema) { }
+export type GetSecurityAuditsQuerySchema = z.input<typeof GetSecurityAuditsQuerySchema>;
+export class GetSecurityAuditsQueryDto extends createZodDto(GetSecurityAuditsQuerySchema, { codec: true }) { }
 
 export const SecurityAuditResponseSchema = SecurityAudit.schema;
-export class SecurityAuditResponseDto extends createZodDto(SecurityAuditResponseSchema) { }
+export type SecurityAuditResponseSchema = z.input<typeof SecurityAuditResponseSchema>;
+export class SecurityAuditResponseDto extends createZodDto(SecurityAuditResponseSchema, { codec: true }) { }
 
 export const SecurityAuditListResponseSchema = z.object({
     items: z.array(SecurityAudit.schema),
     count: z.number(),
 });
-
-export class SecurityAuditListResponseDto extends createZodDto(SecurityAuditListResponseSchema) { }
+export type SecurityAuditListResponseSchema = z.input<typeof SecurityAuditListResponseSchema>;
+export class SecurityAuditListResponseDto extends createZodDto(SecurityAuditListResponseSchema, { codec: true }) { }

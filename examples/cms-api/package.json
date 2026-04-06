@@ -19,7 +19,9 @@
         "test:watch": "jest --watch",
         "test:cov": "jest --coverage",
         "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-        "test:e2e": "jest --config ./test/jest-e2e.json"
+        "test:e2e": "jest --config ./test/jest-e2e.json",
+        "test:integration": "jest --config ./test/jest-integration.json --runInBand",
+        "test:integration:docker": "docker compose run --rm --build integration-tests; docker compose down"
     },
     "dependencies": {
         "@clerk/fastify": "^2.6.27",
@@ -39,7 +41,7 @@
         "fastify": "5.8.2",
         "mongodb": "^7.1.0",
         "morgan": "^1.10.1",
-        "nestjs-zod": "^5.2.1",
+        "nestjs-zod": "^5.3.0",
         "reflect-metadata": "^0.2.2",
         "rxjs": "^7.8.1",
         "swagger-typescript-api": "^13.2.16",

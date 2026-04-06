@@ -1,8 +1,8 @@
 import { z, ZodType } from 'zod';
 import { Filter } from 'mongodb';
 import { Controller, Get, Param, Logger, NotFoundException, Inject, Put, Body } from '@nestjs/common';
-import { ApiOperation, ApiTags, ApiOkResponse, ApiParam } from '@nestjs/swagger';
-import { createZodDto } from 'nestjs-zod';
+import { ApiOperation, ApiTags, ApiParam } from '@nestjs/swagger';
+import { createZodDto, ZodResponse } from 'nestjs-zod';
 
 import * as trailmixModels from '@trailmix-cms/models';
 
@@ -19,16 +19,16 @@ export function buildOrganizationsController<
     organizationSchema: any = trailmixModels.Organization.schema,
 ) {
 
-    class OrganizationDto extends createZodDto(organizationSchema) { }
+    class OrganizationDto extends createZodDto(organizationSchema, { codec: true }) { }
 
-    const UpdateOrganizationSchema = organizationSchema.omit(trailmixModels.InternalFields);
+    const UpdateOrganizationSchema = organizationSchema.omit(trailmixModels.InternalFields).partial();
     class UpdateOrganizationDto extends createZodDto(UpdateOrganizationSchema) { }
 
     const OrganizationListResponseSchema = z.object({
         items: z.array(organizationSchema),
         count: z.number(),
     });
-    class OrganizationListResponseDto extends createZodDto(OrganizationListResponseSchema) { }
+    class OrganizationListResponseDto extends createZodDto(OrganizationListResponseSchema, { codec: true }) { }
 
 
     @Auth()
@@ -44,10 +44,10 @@ export function buildOrganizationsController<
 
         @Get()
         @ApiOperation({ summary: 'Get all organizations' })
-        @ApiOkResponse({ description: 'Organizations found.', type: OrganizationListResponseDto })
+        @ZodResponse({ status: 200, description: 'Organizations found.', type: OrganizationListResponseDto })
         async getOrganizations(
             @PrincipalContext() principal: RequestPrincipal,
-        ): Promise<OrganizationListResponseDto> {
+        ) {
             this.logger.log('Getting all organizations');
             const organizations = await this.organizationManager.find({}, principal);
 
@@ -60,11 +60,11 @@ export function buildOrganizationsController<
         @Get(':id')
         @ApiParam({ name: 'id', description: 'Organization ID' })
         @ApiOperation({ summary: 'Get an organization by ID' })
-        @ApiOkResponse({ description: 'Organization found.', type: OrganizationDto })
+        @ZodResponse({ status: 200, description: 'Organization found.', type: OrganizationDto })
         async getOrganization(
             @PrincipalContext() principal: RequestPrincipal,
             @Param('id', OrganizationByIdPipe) organization: trailmixModels.Organization.Entity
-        ): Promise<OrganizationDtoEntity> {
+        ) {
             const org = await this.organizationManager.get(organization, principal);
             return this.organizationMapEntity(org as OrganizationEntity);
         }
@@ -72,13 +72,13 @@ export function buildOrganizationsController<
         @Put(':id')
         @ApiParam({ name: 'id', description: 'Organization ID' })
         @ApiOperation({ summary: 'Update an organization by ID' })
-        @ApiOkResponse({ description: 'Organization updated.', type: OrganizationDto })
+        @ZodResponse({ status: 200, description: 'Organization updated.', type: OrganizationDto })
         async updateOrganization(
             @PrincipalContext() principal: RequestPrincipal,
             @Param('id', OrganizationByIdPipe) organization: trailmixModels.Organization.Entity,
             @Body() update: UpdateOrganizationDto,
             @AuditContext() auditContext: trailmixModels.AuditContext.Model,
-        ): Promise<OrganizationDtoEntity> {
+        ) {
             const updatedOrganization = await this.organizationManager.update(
                 organization,
                 update,

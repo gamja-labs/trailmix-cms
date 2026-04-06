@@ -253,7 +253,7 @@ describe('OrganizationManager', () => {
             });
             expect(organizationCollection.findOneAndUpdate).toHaveBeenCalledWith(
                 { _id: organizationId },
-                update,
+                { $set: update },
                 auditContext,
             );
             expect(result).toEqual(updatedOrganization);

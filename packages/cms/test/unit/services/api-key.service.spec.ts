@@ -760,8 +760,8 @@ describe('ApiKeyService', () => {
                 trailmixModels.Principal.ApiKey
             );
             expect(apiKeyCollection.find).toHaveBeenCalledWith({
-                "scope.type": trailmixModels.ApiKeyScope.Account,
-                "scope.id": apiKeyEntity._id,
+                scope_type: trailmixModels.ApiKeyScope.Account,
+                scope_id: apiKeyEntity._id,
             });
             expect(result).toEqual({ items: [], count: 0 });
         });
@@ -851,8 +851,8 @@ describe('ApiKeyService', () => {
 
                 expect(apiKeyCollection.find).toHaveBeenCalledWith({
                     name: searchName,
-                    'scope.type': trailmixModels.ApiKeyScope.Account,
-                    'scope.id': accountEntity._id,
+                    scope_type: trailmixModels.ApiKeyScope.Account,
+                    scope_id: accountEntity._id,
                 });
                 expect(result).toEqual({
                     items: mockApiKeys,
@@ -928,8 +928,8 @@ describe('ApiKeyService', () => {
 
                 expect(apiKeyCollection.find).toHaveBeenCalledWith({
                     name: searchName,
-                    'scope.type': trailmixModels.ApiKeyScope.Account,
-                    'scope.id': accountEntity._id,
+                    scope_type: trailmixModels.ApiKeyScope.Account,
+                    scope_id: accountEntity._id,
                 });
                 expect(result).toEqual({
                     items: mockApiKeys,
@@ -986,8 +986,8 @@ describe('ApiKeyService', () => {
                 });
                 expect(apiKeyCollection.find).toHaveBeenCalledWith({
                     disabled: true,
-                    'scope.type': trailmixModels.ApiKeyScope.Organization,
-                    'scope.id': organizationEntity._id,
+                    scope_type: trailmixModels.ApiKeyScope.Organization,
+                    scope_id: organizationEntity._id,
                 });
                 expect(result).toEqual({
                     items: mockApiKeys,

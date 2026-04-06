@@ -46,9 +46,32 @@ jobs:
           args: --yarn-workspaces --strict-out-of-sync=false
           command: monitor
 
+  integration-test:
+    name: 🧪 Integration Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Run integration tests
+        working-directory: examples/cms-api
+        run: docker compose up --build --abort-on-container-exit --exit-code-from integration-tests 2>&1 | tee integration-results.log
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-test-results
+          path: examples/cms-api/integration-results.log
+      - name: Print test results
+        if: always()
+        working-directory: examples/cms-api
+        run: cat integration-results.log
+      - name: Cleanup
+        if: always()
+        working-directory: examples/cms-api
+        run: docker compose down -v
+
   bump:
     name: 🤜 Bump packages
-    needs: [build-and-test, snyk]
+    needs: [build-and-test, snyk, integration-test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6

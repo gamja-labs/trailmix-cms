@@ -1,6 +1,7 @@
 import { OptionalUnlessRequiredId, Collection } from 'mongodb';
 import { ZodType } from 'zod';
 import * as models from '@trailmix-cms/models';
+import { createZodDto } from 'nestjs-zod';
 import { createDatabaseProviders } from '@trailmix-cms/db';
 import { PROVIDER_SYMBOLS } from './constants';
 import { CMSCollectionName } from './constants';
@@ -11,7 +12,9 @@ import * as Collections from './collections';
 import * as Services from './services';
 import * as Managers from './managers';
 import { type FeatureConfig } from './types';
-import { Controllers } from '.';
+import * as Controllers from './controllers';
+import { buildAccountController } from './controllers/account.controller';
+import { buildOrganizationsController } from './controllers/organizations.controller';
 import { AuthGuard } from './auth.guard';
 
 const defaultCollectionConfig: CollectionConfig = {
@@ -133,14 +136,21 @@ export function setupTrailmixCMS<
         ] : []),
     ];
 
+    const AccountController = options?.entities?.accountSchema
+        ? buildAccountController(createZodDto(options.entities.accountSchema, { codec: true }))
+        : Controllers.AccountController;
+
     const controllers: any[] = [
-        Controllers.AccountController,
+        AccountController,
         Controllers.AuditsController,
         Controllers.GlobalRolesController,
         Controllers.SecurityAuditsController
     ];
     if (options?.features?.enableOrganizations) {
-        controllers.push(Controllers.OrganizationsController, Controllers.OrganizationRolesController);
+        const OrganizationsController = options?.entities?.organizationSchema
+            ? buildOrganizationsController(options.entities.organizationSchema)
+            : Controllers.OrganizationsController;
+        controllers.push(OrganizationsController, Controllers.OrganizationRolesController);
     }
     if (options?.features?.apiKeys?.enabled) {
         controllers.push(Controllers.ApiKeysController);

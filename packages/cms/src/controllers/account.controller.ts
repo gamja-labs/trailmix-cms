@@ -1,6 +1,6 @@
 import { Controller, Get, Inject, Logger } from '@nestjs/common';
-import { createZodDto } from 'nestjs-zod';
-import { ApiOperation, ApiTags, ApiOkResponse } from '@nestjs/swagger';
+import { createZodDto, ZodResponse } from 'nestjs-zod';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import * as models from '@trailmix-cms/models';
 
 import { Auth, PrincipalContext } from '../decorators';
@@ -12,7 +12,7 @@ import { GlobalRoleService } from '../services';
 export function buildAccountController<
     AccountEntity extends models.Account.Entity = models.Account.Entity,
     AccountDtoEntity = AccountEntity
->(accountDto: any = createZodDto(models.Account.schema)) {
+>(accountDto: any = createZodDto(models.Account.schema, { codec: true })) {
 
     @Auth({ requiredPrincipalTypes: [models.Principal.Account] })
     @ApiTags('account')
@@ -26,8 +26,8 @@ export function buildAccountController<
 
         @Get()
         @ApiOperation({ summary: 'Get account info' })
-        @ApiOkResponse({ description: 'Account info.', type: accountDto })
-        async info(@PrincipalContext() principal: RequestPrincipal): Promise<AccountDtoEntity> {
+        @ZodResponse({ status: 200, description: 'Account info.', type: accountDto })
+        async info(@PrincipalContext() principal: RequestPrincipal) {
             this.logger.log('info');
             this.logger.log(principal);
             return this.accountMapEntity(principal.entity as AccountEntity);
@@ -35,10 +35,10 @@ export function buildAccountController<
 
         @Get('global-roles')
         @ApiOperation({ summary: 'Get global roles for the current account' })
-        @ApiOkResponse({ description: 'Global roles for the account.', type: dto.AccountGlobalRoleListResponseDto })
+        @ZodResponse({ status: 200, description: 'Global roles for the account.', type: dto.AccountGlobalRoleListResponseDto })
         async getGlobalRoles(
             @PrincipalContext() principal: RequestPrincipal
-        ): Promise<dto.AccountGlobalRoleListResponseDto> {
+        ) {
             this.logger.log('getGlobalRoles');
             const roles = await this.globalRoleService.find({
                 principal_id: principal.entity._id,

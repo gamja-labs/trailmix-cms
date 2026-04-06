@@ -31,7 +31,7 @@ export class ApiKeyService {
      * Create a new API key with scope validation and authorization checks
      */
     async createApiKey(
-        params: Utils.Creatable<trailmixModels.ApiKey.Entity>,
+        params: Omit<Utils.Creatable<trailmixModels.ApiKey.Entity>, 'api_key'>,
         principal: RequestPrincipal,
         auditContext: trailmixModels.AuditContext.Model,
     ): Promise<trailmixModels.ApiKey.Entity> {
@@ -179,8 +179,8 @@ export class ApiKeyService {
             const filter: Filter<trailmixModels.ApiKey.Entity> = {
                 ...(queryParams.name ? { name: queryParams.name } : {}),
                 ...(queryParams.disabled ? { disabled: queryParams.disabled } : {}),
-                ...(queryParams.scope_type ? { "scope.type": queryParams.scope_type } : {}),
-                ...(queryParams.scope_id ? { "scope.id": queryParams.scope_id } : {}),
+                ...(queryParams.scope_type ? { scope_type: queryParams.scope_type } : {}),
+                ...(queryParams.scope_id ? { scope_id: queryParams.scope_id } : {}),
             };
             const apiKeys = await this.apiKeyCollection.find(filter);
             return {
@@ -212,8 +212,8 @@ export class ApiKeyService {
                 const filter: Filter<trailmixModels.ApiKey.Entity> = {
                     ...(queryParams.name ? { name: queryParams.name } : {}),
                     ...(queryParams.disabled ? { disabled: queryParams.disabled } : {}),
-                    "scope.type": trailmixModels.ApiKeyScope.Account,
-                    "scope.id": principal.entity._id,
+                    scope_type: trailmixModels.ApiKeyScope.Account,
+                    scope_id: principal.entity._id,
                 };
                 const apiKeys = await this.apiKeyCollection.find(filter);
                 return {
@@ -247,8 +247,8 @@ export class ApiKeyService {
                 const filter: Filter<trailmixModels.ApiKey.Entity> = {
                     ...(queryParams.name ? { name: queryParams.name } : {}),
                     ...(queryParams.disabled ? { disabled: queryParams.disabled } : {}),
-                    "scope.type": trailmixModels.ApiKeyScope.Organization,
-                    "scope.id": organization_id,
+                    scope_type: trailmixModels.ApiKeyScope.Organization,
+                    scope_id: organization_id,
                 };
                 const apiKeys = await this.apiKeyCollection.find(filter);
                 return {

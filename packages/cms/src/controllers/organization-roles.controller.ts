@@ -1,6 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { Controller, Get, Post, Delete, Body, Param, Query } from '@nestjs/common';
-import { ApiOperation, ApiTags, ApiOkResponse, ApiCreatedResponse, ApiParam } from '@nestjs/swagger';
+import { ApiOperation, ApiTags, ApiOkResponse, ApiParam } from '@nestjs/swagger';
+import { ZodResponse } from 'nestjs-zod';
 import * as trailmixModels from '@trailmix-cms/models';
 import { ObjectIdPipe } from '@trailmix-cms/utils';
 
@@ -19,12 +20,12 @@ export class OrganizationRolesController {
 
     @Post()
     @ApiOperation({ summary: 'Assign an organization role to a principal' })
-    @ApiCreatedResponse({ description: 'Organization role assigned successfully.', type: dto.OrganizationRoleListResponseDto })
+    @ZodResponse({ status: 201, description: 'Organization role assigned successfully.', type: dto.OrganizationRoleListResponseDto })
     async assignRole(
         @Body() assignRoleDto: dto.AssignOrganizationRoleDto,
         @PrincipalContext() principal: RequestPrincipal,
         @AuditContext() auditContext: trailmixModels.AuditContext.Model,
-    ): Promise<dto.OrganizationRoleListResponseDto> {
+    ) {
         const role = await this.organizationRoleManager.insertOne(
             {
                 organization_id: assignRoleDto.organization_id,
@@ -44,11 +45,11 @@ export class OrganizationRolesController {
 
     @Get()
     @ApiOperation({ summary: 'Get all organization role assignments' })
-    @ApiOkResponse({ description: 'Organization role assignments found.', type: dto.OrganizationRoleListResponseDto })
+    @ZodResponse({ status: 200, description: 'Organization role assignments found.', type: dto.OrganizationRoleListResponseDto })
     async getOrganizationRoleAssignments(
         @Query() queryParams: dto.GetOrganizationRoleAssignmentsQueryDto,
         @PrincipalContext() principal: RequestPrincipal,
-    ): Promise<dto.OrganizationRoleListResponseDto> {
+    ) {
         const result = await this.organizationRoleManager.find(
             {
                 organization_id: queryParams.organization_id,
@@ -67,11 +68,11 @@ export class OrganizationRolesController {
     @Get(':id')
     @ApiParam({ name: 'id', description: 'Organization role assignment ID', type: String })
     @ApiOperation({ summary: 'Get an organization role assignment' })
-    @ApiOkResponse({ description: 'Organization role assignment found.', type: dto.OrganizationRoleDto })
+    @ZodResponse({ status: 200, description: 'Organization role assignment found.', type: dto.OrganizationRoleDto })
     async getOrganizationRoleAssignment(
         @Param('id', ObjectIdPipe) id: ObjectId,
         @PrincipalContext() principal: RequestPrincipal,
-    ): Promise<dto.OrganizationRoleDto> {
+    ) {
         return await this.organizationRoleManager.get(id, principal);
     }
 

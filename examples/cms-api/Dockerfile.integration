@@ -1,0 +1,36 @@
+FROM node:24-slim
+
+WORKDIR /app
+
+# Enable corepack for Yarn 4
+RUN corepack enable
+
+# Copy monorepo root files needed for install
+COPY package.json yarn.lock .yarnrc.yml ./
+
+# Copy workspace package.json files
+COPY packages/models/package.json packages/models/
+COPY packages/utils/package.json packages/utils/
+COPY packages/db/package.json packages/db/
+COPY packages/cms/package.json packages/cms/
+COPY packages/vue/package.json packages/vue/
+COPY examples/cms-api/package.json examples/cms-api/
+COPY examples/cms-web/package.json examples/cms-web/
+COPY examples/simple-todo-api/package.json examples/simple-todo-api/
+
+# Install dependencies
+RUN yarn install --immutable
+
+# Copy full source (after install for better layer caching)
+COPY . .
+
+# Clean stale build artifacts that may have leaked into the context,
+# then build all workspace packages from source
+RUN find . -name '*.tsbuildinfo' -delete 2>/dev/null; yarn build
+
+ENV MONGODB_CONNECTION_STRING=mongodb://mongodb:27017/?replicaSet=rs0
+ENV NODE_ENV=test
+
+WORKDIR /app/examples/cms-api
+
+CMD ["yarn", "test:integration"]

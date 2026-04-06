@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Put, Delete, Param, Body, Logger, NotFoundException, Query } from '@nestjs/common';
-import { ApiOperation, ApiTags, ApiOkResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiParam } from '@nestjs/swagger';
+import { ApiOperation, ApiTags, ApiOkResponse, ApiNotFoundResponse, ApiParam } from '@nestjs/swagger';
+import { ZodResponse } from 'nestjs-zod';
 import { TodoListService } from '../services/todo-list.service';
 import {
     CreateTodoItemDto,
@@ -25,14 +26,11 @@ export class TodoItemController {
 
     @Post()
     @ApiOperation({ summary: 'Create a new todo item in a list' })
-    @ApiCreatedResponse({
-        description: 'Todo item created successfully.',
-        type: TodoItemResponseDto,
-    })
+    @ZodResponse({ status: 201, description: 'Todo item created successfully.', type: TodoItemResponseDto })
     @ApiNotFoundResponse({ description: 'Todo list not found.' })
     async createItem(
         @Body() createDto: CreateTodoItemDto,
-    ): Promise<TodoItemResponseDto> {
+    ) {
         const todoList = await this.todoListCollection.get(createDto.list_id);
         if (!todoList) {
             throw new NotFoundException('Todo list not found');
@@ -51,12 +49,9 @@ export class TodoItemController {
 
     @Get()
     @ApiOperation({ summary: 'Get all todo items in a list' })
-    @ApiOkResponse({
-        description: 'List of all todo items in the list.',
-        type: [TodoItemResponseDto],
-    })
+    @ZodResponse({ status: 200, description: 'List of all todo items in the list.', type: TodoItemListResponseDto })
     @ApiNotFoundResponse({ description: 'Todo list not found.' })
-    async getItemsByListId(@Query() query: TodoItemListQueryDto): Promise<TodoItemListResponseDto> {
+    async getItemsByListId(@Query() query: TodoItemListQueryDto) {
         const todoList = await this.todoListCollection.get(query.list_id);
         if (!todoList) {
             throw new NotFoundException('Todo list not found');
@@ -72,29 +67,23 @@ export class TodoItemController {
     @Get(':itemId')
     @ApiParam({ name: 'itemId', description: 'Todo item ID' })
     @ApiOperation({ summary: 'Get a todo item by ID' })
-    @ApiOkResponse({
-        description: 'Todo item found.',
-        type: TodoItemResponseDto,
-    })
+    @ZodResponse({ status: 200, description: 'Todo item found.', type: TodoItemResponseDto })
     @ApiNotFoundResponse({ description: 'Todo item not found.' })
     getItemById(
         @Param('itemId', TodoItemByIdPipe) item: TodoItem.Entity,
-    ): TodoItemResponseDto {
+    ) {
         return item;
     }
 
     @Put(':itemId')
     @ApiParam({ name: 'itemId', description: 'Todo item ID' })
     @ApiOperation({ summary: 'Update a todo item' })
-    @ApiOkResponse({
-        description: 'Todo item updated successfully.',
-        type: TodoItemResponseDto,
-    })
+    @ZodResponse({ status: 200, description: 'Todo item updated successfully.', type: TodoItemResponseDto })
     @ApiNotFoundResponse({ description: 'Todo item not found.' })
     updateItem(
         @Param('itemId', TodoItemByIdPipe) item: TodoItem.Entity,
         @Body() updateDto: UpdateTodoItemDto,
-    ): Promise<TodoItemResponseDto> {
+    ) {
         this.logger.log(`Updating todo item: ${item._id}`);
         const auditContext: AuditContext.Model = {
             system: false,

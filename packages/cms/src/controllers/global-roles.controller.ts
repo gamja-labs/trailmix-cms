@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Delete, Body, Param, Query } from '@nestjs/common';
-import { ApiOperation, ApiTags, ApiOkResponse, ApiCreatedResponse, ApiParam } from '@nestjs/swagger';
+import { ApiOperation, ApiTags, ApiOkResponse, ApiParam } from '@nestjs/swagger';
+import { ZodResponse } from 'nestjs-zod';
 import { ObjectId } from 'mongodb';
 import { ObjectIdPipe } from '@trailmix-cms/utils';
 import * as trailmixModels from '@trailmix-cms/models';
@@ -19,12 +20,12 @@ export class GlobalRolesController {
 
     @Post()
     @ApiOperation({ summary: 'Assign a global role to a principal' })
-    @ApiCreatedResponse({ description: 'Global role assigned successfully.', type: dto.GlobalRoleDto })
+    @ZodResponse({ status: 201, description: 'Global role assigned successfully.', type: dto.GlobalRoleDto })
     async assignRole(
         @Body() assignRoleDto: dto.AssignGlobalRoleDto,
         @PrincipalContext() principal: RequestPrincipal,
         @AuditContext() auditContext: trailmixModels.AuditContext.Model,
-    ): Promise<dto.GlobalRoleDto> {
+    ) {
         const role = await this.globalRoleManager.insertOne({
             principal_id: assignRoleDto.principal_id,
             principal_type: assignRoleDto.principal_type,
@@ -36,11 +37,11 @@ export class GlobalRolesController {
 
     @Get()
     @ApiOperation({ summary: 'Get all global role assignments' })
-    @ApiOkResponse({ description: 'Global role assignments found.', type: dto.GlobalRoleListResponseDto })
+    @ZodResponse({ status: 200, description: 'Global role assignments found.', type: dto.GlobalRoleListResponseDto })
     async getGlobalRoleAssignments(
         @Query() queryParams: dto.GetGlobalRoleAssignmentsQueryDto,
         @PrincipalContext() principal: RequestPrincipal,
-    ): Promise<dto.GlobalRoleListResponseDto> {
+    ) {
         const roles = await this.globalRoleManager.find({
             principal_id: queryParams.principal_id,
             principal_type: queryParams.principal_type,
@@ -52,11 +53,11 @@ export class GlobalRolesController {
     @Get(':id')
     @ApiParam({ name: 'id', description: 'Global role assignment ID', type: String })
     @ApiOperation({ summary: 'Get a global role assignment' })
-    @ApiOkResponse({ description: 'Global role assignment found.', type: dto.GlobalRoleDto })
+    @ZodResponse({ status: 200, description: 'Global role assignment found.', type: dto.GlobalRoleDto })
     async getGlobalRoleAssignment(
         @Param('id', ObjectIdPipe) id: ObjectId,
         @PrincipalContext() principal: RequestPrincipal,
-    ): Promise<dto.GlobalRoleDto> {
+    ) {
         return await this.globalRoleManager.get(id, principal);
     }
 

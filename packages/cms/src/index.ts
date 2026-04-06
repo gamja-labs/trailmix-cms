@@ -8,6 +8,7 @@ export * from './types/hooks/auth-guard-hook';
 export * from './types/hooks/organization-delete-hook';
 export * from './types';
 export * from './utils/provider-helpers';
+export * as Dto from './dto';
 export * as Services from './services';
 export * as Controllers from './controllers';
 export * as Collections from './collections';

@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Put, Delete, Param, Body, Logger, Query, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
-import { ApiOperation, ApiTags, ApiOkResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { ApiOperation, ApiTags, ApiOkResponse, ApiNotFoundResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { ZodResponse } from 'nestjs-zod';
 import * as dto from '../dto/todo.dto';
 import { TodoListByIdPipe } from '../pipes';
 import { TodoList } from '../models';
@@ -23,15 +24,12 @@ export class TodoListController {
 
     @Post()
     @ApiOperation({ summary: 'Create a new todo list' })
-    @ApiCreatedResponse({
-        description: 'Todo list created successfully.',
-        type: dto.TodoListResponseDto,
-    })
+    @ZodResponse({ status: 201, description: 'Todo list created successfully.', type: dto.TodoListResponseDto })
     async createList(
         @Body() createDto: dto.CreateTodoListDto,
         @PrincipalContext() principal: RequestPrincipal,
         @AuditContext() auditContext: models.AuditContext.Model,
-    ): Promise<dto.TodoListResponseDto> {
+    ) {
         this.logger.log(`Creating todo list: ${createDto.name}`);
 
         if (!createDto.organization_id) {
@@ -60,14 +58,11 @@ export class TodoListController {
     @Get()
     @ApiOperation({ summary: 'Get all todo lists' })
     @ApiQuery({ name: 'organization_id', required: false, description: 'Filter by organization ID (required unless user is global admin)' })
-    @ApiOkResponse({
-        description: 'List of all todo lists.',
-        type: dto.TodoListListResponseDto,
-    })
+    @ZodResponse({ status: 200, description: 'List of all todo lists.', type: dto.TodoListListResponseDto })
     async getAllLists(
         @Query('organization_id') organizationId?: string,
         @PrincipalContext() principal?: RequestPrincipal,
-    ): Promise<dto.TodoListListResponseDto> {
+    ) {
         this.logger.log('Getting all todo lists');
 
         if (!principal) {
@@ -115,15 +110,12 @@ export class TodoListController {
     @Get(':id')
     @ApiOperation({ summary: 'Get a todo list by ID' })
     @ApiParam({ name: 'id', description: 'Todo list ID' })
-    @ApiOkResponse({
-        description: 'Todo list found.',
-        type: dto.TodoListResponseDto,
-    })
+    @ZodResponse({ status: 200, description: 'Todo list found.', type: dto.TodoListResponseDto })
     @ApiNotFoundResponse({ description: 'Todo list not found.' })
     async getListById(
         @Param('id', TodoListByIdPipe) todoList: TodoList.Entity,
         @PrincipalContext() principal: RequestPrincipal,
-    ): Promise<dto.TodoListResponseDto> {
+    ) {
         // Verify user has access to the organization
         const hasAccess = await this.authorizationService.resolveOrganizationAuthorization({
             principal,
@@ -142,17 +134,14 @@ export class TodoListController {
     @Put(':id')
     @ApiOperation({ summary: 'Update a todo list' })
     @ApiParam({ name: 'id', description: 'Todo list ID' })
-    @ApiOkResponse({
-        description: 'Todo list updated successfully.',
-        type: dto.TodoListResponseDto,
-    })
+    @ZodResponse({ status: 200, description: 'Todo list updated successfully.', type: dto.TodoListResponseDto })
     @ApiNotFoundResponse({ description: 'Todo list not found.' })
     async updateList(
         @Param('id', TodoListByIdPipe) todoList: TodoList.Entity,
         @Body() updateDto: dto.UpdateTodoListDto,
         @PrincipalContext() principal: RequestPrincipal,
         @AuditContext() auditContext: models.AuditContext.Model,
-    ): Promise<dto.TodoListResponseDto> {
+    ) {
         // Verify user has access to the organization
         const hasAccess = await this.authorizationService.resolveOrganizationAuthorization({
             principal,

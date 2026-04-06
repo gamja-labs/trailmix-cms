@@ -1,5 +1,6 @@
 import { Controller, Get, Logger } from '@nestjs/common';
-import { ApiOperation, ApiTags, ApiOkResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ZodResponse } from 'nestjs-zod';
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '../config';
 import { pkg } from '../utils/environment';
@@ -15,11 +16,8 @@ export class StatusController {
 
     @Get()
     @ApiOperation({ summary: 'Check server status' })
-    @ApiOkResponse({
-        description: 'Server is up.',
-        type: StatusResponseDto
-    })
-    async status(): Promise<StatusResponseDto> {
+    @ZodResponse({ status: 200, description: 'Server is up.', type: StatusResponseDto })
+    async status() {
         this.logger.log('status');
         return {
             version: pkg.version,

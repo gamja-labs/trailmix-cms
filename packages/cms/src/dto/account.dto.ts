@@ -6,4 +6,5 @@ export const AccountGlobalRoleListResponseSchema = z.object({
     items: z.array(GlobalRole.schema),
     count: z.number(),
 });
-export class AccountGlobalRoleListResponseDto extends createZodDto(AccountGlobalRoleListResponseSchema) { }
+export type AccountGlobalRoleListResponseSchema = z.input<typeof AccountGlobalRoleListResponseSchema>;
+export class AccountGlobalRoleListResponseDto extends createZodDto(AccountGlobalRoleListResponseSchema, { codec: true }) { }

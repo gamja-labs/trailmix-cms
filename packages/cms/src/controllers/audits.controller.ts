@@ -1,5 +1,6 @@
 import { Controller, Get, Param, Logger, BadRequestException } from '@nestjs/common';
-import { ApiOperation, ApiTags, ApiOkResponse, ApiNotFoundResponse, ApiParam } from '@nestjs/swagger';
+import { ApiOperation, ApiTags, ApiNotFoundResponse, ApiParam } from '@nestjs/swagger';
+import { ZodResponse } from 'nestjs-zod';
 import { DatabaseService, Collections } from '@trailmix-cms/db';
 import { Principal, RoleValue } from '@trailmix-cms/models';
 import { validateObjectId } from '@trailmix-cms/utils';
@@ -22,15 +23,12 @@ export class AuditsController {
     @ApiParam({ name: 'type', description: 'Entity type' })
     @ApiParam({ name: 'id', description: 'Entity ID' })
     @ApiOperation({ summary: 'Get audit history for a record' })
-    @ApiOkResponse({
-        description: 'Audit record found.',
-        type: dto.AuditListResponseDto,
-    })
+    @ZodResponse({ status: 200, description: 'Audit record found.', type: dto.AuditListResponseDto })
     @ApiNotFoundResponse({ description: 'Audit record not found.' })
     async getAuditRecord(
         @Param('type') type: string,
         @Param('id') id: string
-    ): Promise<dto.AuditListResponseDto> {
+    ) {
         this.logger.log(`Getting audit history for entity type: ${type} and entity ID: ${id}`);
 
         // Check if the collection type exists in MongoDB
@@ -51,4 +49,3 @@ export class AuditsController {
         };
     }
 }
-

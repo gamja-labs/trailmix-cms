@@ -1,5 +1,6 @@
 import { Controller, Get, Param, Query, Logger, NotFoundException } from '@nestjs/common';
-import { ApiOperation, ApiTags, ApiOkResponse, ApiNotFoundResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { ApiOperation, ApiTags, ApiNotFoundResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { ZodResponse } from 'nestjs-zod';
 import { ObjectId } from 'mongodb';
 
 import { Auth } from '../decorators/auth.decorator';
@@ -25,13 +26,10 @@ export class SecurityAuditsController {
     @ApiQuery({ name: 'principal_id', required: false, description: 'Filter by principal ID' })
     @ApiQuery({ name: 'principal_type', required: false, description: 'Filter by principal type', enum: trailmixModels.Principal })
     @ApiQuery({ name: 'event_type', required: false, description: 'Filter by event type', enum: trailmixModels.SecurityAuditEventType })
-    @ApiOkResponse({
-        description: 'Security audit records found.',
-        type: dto.SecurityAuditListResponseDto,
-    })
+    @ZodResponse({ status: 200, description: 'Security audit records found.', type: dto.SecurityAuditListResponseDto })
     async getSecurityAudits(
         @Query() queryParams: dto.GetSecurityAuditsQueryDto,
-    ): Promise<dto.SecurityAuditListResponseDto> {
+    ) {
         this.logger.log(`Getting security audit records with query: ${JSON.stringify(queryParams)}`);
 
         const filter: {
@@ -63,14 +61,11 @@ export class SecurityAuditsController {
     @Get(':id')
     @ApiParam({ name: 'id', description: 'Security audit record ID' })
     @ApiOperation({ summary: 'Get a specific security audit record by ID' })
-    @ApiOkResponse({
-        description: 'Security audit record found.',
-        type: dto.SecurityAuditResponseDto,
-    })
+    @ZodResponse({ status: 200, description: 'Security audit record found.', type: dto.SecurityAuditResponseDto })
     @ApiNotFoundResponse({ description: 'Security audit record not found.' })
     async getSecurityAuditById(
         @Param('id') id: string,
-    ): Promise<trailmixModels.SecurityAudit.Entity> {
+    ) {
         this.logger.log(`Getting security audit record ${id}`);
 
         const auditId = validateObjectId(id, { type: 'param', data: 'id' });

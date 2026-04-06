@@ -169,7 +169,7 @@ export class OrganizationManager {
 
         const updatedOrganization = await this.organizationCollection.findOneAndUpdate(
             { _id: organization._id },
-            update,
+            { $set: update },
             auditContext,
         );
 

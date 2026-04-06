@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { Base, Codecs } from '@trailmix-cms/models';
+import { baseEntitySchema, Codecs } from '@trailmix-cms/models';
 
-export const entitySchema = Base.baseEntitySchema.extend({
+export const entitySchema = baseEntitySchema.extend({
     list_id: Codecs.ObjectId,
     text: z.string().min(1, 'Item text is required'),
     completed: z.boolean().optional(),
