@@ -1,7 +1,7 @@
 {
   "name": "trailmix-cms-docs",
   "description": "TrailmixCMS Docs",
-  "version": "0.8.14",
+  "version": "0.8.15",
   "license": "MIT",
   "type": "module",
   "private": true,
