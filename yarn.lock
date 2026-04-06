@@ -2431,11 +2431,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/common@npm:^11.1.17":
-  version: 11.1.17
-  resolution: "@nestjs/common@npm:11.1.17"
+"@nestjs/common@npm:^11.1.18":
+  version: 11.1.18
+  resolution: "@nestjs/common@npm:11.1.18"
   dependencies:
-    file-type: "npm:21.3.2"
+    file-type: "npm:21.3.4"
     iterare: "npm:1.2.1"
     load-esm: "npm:1.0.3"
     tslib: "npm:2.8.1"
@@ -2450,7 +2450,7 @@ __metadata:
       optional: true
     class-validator:
       optional: true
-  checksum: 10c0/65af2654ab42f1061b699fe3aee8202fb5a3cf7695c1fb854df2feef1f7a44a1b99682dd75212ff62d4fc6dee4ab9a0959f9338496ba4f4e293f68d75a024610
+  checksum: 10c0/d074a1c44099d91b6456212f0a1a62352897e2b9195735eea4e683534d30a305810ec9e9cd0912e77cc20401a16d449283aa8d9302531776ba2f91eeae8b8327
   languageName: node
   linkType: hard
 
@@ -2468,14 +2468,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/core@npm:^11.1.17":
-  version: 11.1.17
-  resolution: "@nestjs/core@npm:11.1.17"
+"@nestjs/core@npm:^11.1.18":
+  version: 11.1.18
+  resolution: "@nestjs/core@npm:11.1.18"
   dependencies:
     "@nuxt/opencollective": "npm:0.4.1"
     fast-safe-stringify: "npm:2.1.1"
     iterare: "npm:1.2.1"
-    path-to-regexp: "npm:8.3.0"
+    path-to-regexp: "npm:8.4.2"
     tslib: "npm:2.8.1"
     uid: "npm:2.0.2"
   peerDependencies:
@@ -2492,7 +2492,7 @@ __metadata:
       optional: true
     "@nestjs/websockets":
       optional: true
-  checksum: 10c0/7d6b3a0add2569b2786d5cdc9d0d8fda7eaa557f7ed607fd73934c63565d3bdfe1e1b15d0d0b5e5eccabc62338812e05d2f8c7223b137ac568de33c531264b54
+  checksum: 10c0/324d7006b6a564cba7c7939a99928270d4e2f3c31172c596297ba97a150857458c431eae78ed5ef1c697aa754cf4179444be44184931183ed3063416cca1d381
   languageName: node
   linkType: hard
 
@@ -2513,18 +2513,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/platform-fastify@npm:^11.1.17":
-  version: 11.1.17
-  resolution: "@nestjs/platform-fastify@npm:11.1.17"
+"@nestjs/platform-fastify@npm:^11.1.18":
+  version: 11.1.18
+  resolution: "@nestjs/platform-fastify@npm:11.1.18"
   dependencies:
     "@fastify/cors": "npm:11.2.0"
     "@fastify/formbody": "npm:8.0.2"
     fast-querystring: "npm:1.1.2"
-    fastify: "npm:5.8.2"
+    fastify: "npm:5.8.4"
     fastify-plugin: "npm:5.1.0"
     find-my-way: "npm:9.5.0"
     light-my-request: "npm:6.6.0"
-    path-to-regexp: "npm:8.3.0"
+    path-to-regexp: "npm:8.4.2"
     reusify: "npm:1.1.0"
     tslib: "npm:2.8.1"
   peerDependencies:
@@ -2537,7 +2537,7 @@ __metadata:
       optional: true
     "@fastify/view":
       optional: true
-  checksum: 10c0/12aa976a96c7e49190989bf0a3def0a3fb2b7763aa54de79e6f4bf8eeed693330bf508b95632df5d1a4ab5a75757fc7ada459d6fd907e4fd499813f9f70a50ef
+  checksum: 10c0/131ead8a78e17d82b8a0764da408ae0649e892251e18923b7dfd68a0c9609a22d18526f21fd31602288548a1f066d239a56f86d09a13b40f59179f655d7f69cf
   languageName: node
   linkType: hard
 
@@ -2584,9 +2584,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/testing@npm:^11.1.17":
-  version: 11.1.17
-  resolution: "@nestjs/testing@npm:11.1.17"
+"@nestjs/testing@npm:^11.1.18":
+  version: 11.1.18
+  resolution: "@nestjs/testing@npm:11.1.18"
   dependencies:
     tslib: "npm:2.8.1"
   peerDependencies:
@@ -2599,7 +2599,7 @@ __metadata:
       optional: true
     "@nestjs/platform-express":
       optional: true
-  checksum: 10c0/fe6408ad155c328beaff4eec2b36bcf853e7bbf2c16806f6cf64dd293fd4de1e3d1232df81bfcece12614de866c7551f728aa8474e2990ae22fe07e69dea8f21
+  checksum: 10c0/49addd548fbf8881181b4e467a713835190cb79e24cd3a9ad643d6c7b7bca1688547ce0a7dffe453d811fb85f5aad75d247d6d04bbceb36136dd3724d1e8509f
   languageName: node
   linkType: hard
 
@@ -3228,11 +3228,11 @@ __metadata:
     "@babel/core": "npm:^7.29.0"
     "@clerk/fastify": "npm:^2.6.27"
     "@faker-js/faker": "npm:^9.0.0"
-    "@nestjs/common": "npm:^11.1.17"
+    "@nestjs/common": "npm:^11.1.18"
     "@nestjs/config": "npm:^4.0.3"
-    "@nestjs/core": "npm:^11.1.17"
+    "@nestjs/core": "npm:^11.1.18"
     "@nestjs/swagger": "npm:^11.2.6"
-    "@nestjs/testing": "npm:^11.1.17"
+    "@nestjs/testing": "npm:^11.1.18"
     "@trailmix-cms/db": "workspace:*"
     "@trailmix-cms/models": "workspace:*"
     "@trailmix-cms/utils": "workspace:*"
@@ -3256,7 +3256,7 @@ __metadata:
     zod: "npm:^4.3.6"
   peerDependencies:
     "@clerk/fastify": ^2.6.27
-    "@nestjs/common": ^11.1.17
+    "@nestjs/common": ^11.1.18
     "@nestjs/config": ^4.0.3
     "@trailmix-cms/db": "workspace:*"
     "@trailmix-cms/models": "workspace:*"
@@ -3273,7 +3273,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@trailmix-cms/db@workspace:packages/db"
   dependencies:
-    "@nestjs/common": "npm:^11.1.17"
+    "@nestjs/common": "npm:^11.1.18"
     "@nestjs/config": "npm:^4.0.3"
     "@trailmix-cms/models": "workspace:*"
     "@types/lodash.merge": "npm:^4.6.9"
@@ -3286,7 +3286,7 @@ __metadata:
     typescript: "npm:5.9.3"
     zod: "npm:^4.3.6"
   peerDependencies:
-    "@nestjs/common": ^11.1.17
+    "@nestjs/common": ^11.1.18
     "@nestjs/config": ^4.0.3
     "@trailmix-cms/models": "workspace:*"
     mongodb: ^7.1.0
@@ -3310,8 +3310,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@trailmix-cms/utils@workspace:packages/utils"
   dependencies:
-    "@nestjs/common": "npm:^11.1.17"
-    "@nestjs/core": "npm:^11.1.17"
+    "@nestjs/common": "npm:^11.1.18"
+    "@nestjs/core": "npm:^11.1.18"
     "@types/morgan": "npm:^1.9.10"
     bson: "npm:^7.2.0"
     fastify: "npm:5.8.2"
@@ -3322,8 +3322,8 @@ __metadata:
     typescript: "npm:5.9.3"
     zod: "npm:^4.3.6"
   peerDependencies:
-    "@nestjs/common": ^11.1.17
-    "@nestjs/core": ^11.1.17
+    "@nestjs/common": ^11.1.18
+    "@nestjs/core": ^11.1.18
     fastify: 5.8.2
     nestjs-zod: ^5.3.0
     reflect-metadata: ^0.2.2
@@ -5440,13 +5440,13 @@ __metadata:
     "@eslint/js": "npm:^9.18.0"
     "@fastify/static": "npm:^9.0.0"
     "@nestjs/cli": "npm:^11.0.17"
-    "@nestjs/common": "npm:^11.1.17"
+    "@nestjs/common": "npm:^11.1.18"
     "@nestjs/config": "npm:^4.0.3"
-    "@nestjs/core": "npm:^11.1.17"
-    "@nestjs/platform-fastify": "npm:^11.1.17"
+    "@nestjs/core": "npm:^11.1.18"
+    "@nestjs/platform-fastify": "npm:^11.1.18"
     "@nestjs/schematics": "npm:^11.0.9"
     "@nestjs/swagger": "npm:^11.2.6"
-    "@nestjs/testing": "npm:^11.1.17"
+    "@nestjs/testing": "npm:^11.1.18"
     "@openapi-studio/nestjs": "npm:^0.6.2"
     "@trailmix-cms/cms": "workspace:*"
     "@trailmix-cms/db": "workspace:*"
@@ -6569,6 +6569,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fastify@npm:5.8.4":
+  version: 5.8.4
+  resolution: "fastify@npm:5.8.4"
+  dependencies:
+    "@fastify/ajv-compiler": "npm:^4.0.5"
+    "@fastify/error": "npm:^4.0.0"
+    "@fastify/fast-json-stringify-compiler": "npm:^5.0.0"
+    "@fastify/proxy-addr": "npm:^5.0.0"
+    abstract-logging: "npm:^2.0.1"
+    avvio: "npm:^9.0.0"
+    fast-json-stringify: "npm:^6.0.0"
+    find-my-way: "npm:^9.0.0"
+    light-my-request: "npm:^6.0.0"
+    pino: "npm:^9.14.0 || ^10.1.0"
+    process-warning: "npm:^5.0.0"
+    rfdc: "npm:^1.3.1"
+    secure-json-parse: "npm:^4.0.0"
+    semver: "npm:^7.6.0"
+    toad-cache: "npm:^3.7.0"
+  checksum: 10c0/560ef35d59f96d9900c6e96946736215873ed8aa7a493f61f9489c1bdbddf8f714c735886c00e21077fe9a0ea96539b8b5d6755e8877c464b0b04b6afde9c5ab
+  languageName: node
+  linkType: hard
+
 "fastq@npm:^1.17.1":
   version: 1.19.1
   resolution: "fastq@npm:1.19.1"
@@ -6606,15 +6629,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"file-type@npm:21.3.2":
-  version: 21.3.2
-  resolution: "file-type@npm:21.3.2"
+"file-type@npm:21.3.4":
+  version: 21.3.4
+  resolution: "file-type@npm:21.3.4"
   dependencies:
     "@tokenizer/inflate": "npm:^0.4.1"
     strtok3: "npm:^10.3.4"
     token-types: "npm:^6.1.1"
     uint8array-extras: "npm:^1.4.0"
-  checksum: 10c0/74d02787d2702f9d8592c715be1258cc6b865db98f400d17308f029d6bb895dc3135fcd2e5b4788b01e1b3ff4fc7e83d5fa32fd81e59a20f30b3dfe5f1e52aca
+  checksum: 10c0/6f15e7538c5d73f9308d2e897365d253a6647a6751bb1b0d85c78aebc02b8976afb7c6c9b3759687a064b1b3d60246e5504746b8f11e38b0d5a1b339087e00d2
   languageName: node
   linkType: hard
 
@@ -9450,6 +9473,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"path-to-regexp@npm:8.4.2":
+  version: 8.4.2
+  resolution: "path-to-regexp@npm:8.4.2"
+  checksum: 10c0/05b115c49b47ad252ce05faa32930f643f23769c68b8bcfe78ad833545140c48bbffb3266986d6c8d5db13a64cf12e07e0d72d9882cab830efeefa553533ebaf
+  languageName: node
+  linkType: hard
+
 "path-type@npm:^4.0.0":
   version: 4.0.0
   resolution: "path-type@npm:4.0.0"
@@ -10495,13 +10525,13 @@ __metadata:
     "@eslint/js": "npm:^9.18.0"
     "@fastify/static": "npm:^9.0.0"
     "@nestjs/cli": "npm:^11.0.16"
-    "@nestjs/common": "npm:^11.1.17"
+    "@nestjs/common": "npm:^11.1.18"
     "@nestjs/config": "npm:^4.0.3"
-    "@nestjs/core": "npm:^11.1.17"
-    "@nestjs/platform-fastify": "npm:^11.1.17"
+    "@nestjs/core": "npm:^11.1.18"
+    "@nestjs/platform-fastify": "npm:^11.1.18"
     "@nestjs/schematics": "npm:^11.0.9"
     "@nestjs/swagger": "npm:^11.2.6"
-    "@nestjs/testing": "npm:^11.1.17"
+    "@nestjs/testing": "npm:^11.1.18"
     "@trailmix-cms/cms": "workspace:^0.8.3"
     "@trailmix-cms/db": "workspace:^0.8.3"
     "@trailmix-cms/models": "workspace:^0.8.3"

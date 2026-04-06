@@ -18,9 +18,9 @@
   },
   "dependencies": {
     "@clerk/fastify": "^2.6.27",
-    "@nestjs/common": "^11.1.17",
+    "@nestjs/common": "^11.1.18",
     "@nestjs/config": "^4.0.3",
-    "@nestjs/core": "^11.1.17",
+    "@nestjs/core": "^11.1.18",
     "@nestjs/swagger": "^11.2.6",
     "@trailmix-cms/db": "workspace:*",
     "@trailmix-cms/models": "workspace:*",
@@ -35,7 +35,7 @@
   "devDependencies": {
     "@babel/core": "^7.29.0",
     "@faker-js/faker": "^9.0.0",
-    "@nestjs/testing": "^11.1.17",
+    "@nestjs/testing": "^11.1.18",
     "@types/babel__core": "^7",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.10.1",
@@ -51,7 +51,7 @@
   },
   "peerDependencies": {
     "@clerk/fastify": "^2.6.27",
-    "@nestjs/common": "^11.1.17",
+    "@nestjs/common": "^11.1.18",
     "@nestjs/config": "^4.0.3",
     "@trailmix-cms/db": "workspace:*",
     "@trailmix-cms/models": "workspace:*",
