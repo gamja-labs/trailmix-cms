@@ -78,6 +78,6 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-      - uses: chriswoodle/bump-please-action@v1.2.0
+      - uses: chriswoodle/bump-please-action@v1.6.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
