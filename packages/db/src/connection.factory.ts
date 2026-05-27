@@ -17,13 +17,19 @@ export const connectionFactory = {
                 db: mongodb.Db
             } = {
                 client: {
-                    close: () => { }
+                    close: () => { },
+                    startSession: () => ({
+                        withTransaction: async (fn: () => Promise<unknown>) => fn(),
+                        endSession: () => { },
+                    }),
                 },
                 db: {
                     collection: () => ({
                         createIndex: () => { },
+                        find: () => ({ toArray: async () => [] }),
                         findOne: () => ({}),
                         insertOne: () => { },
+                        updateOne: () => { },
                         countDocuments: () => 0,
                     }),
                 }
