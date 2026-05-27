@@ -31,6 +31,7 @@ export const connectionFactory = {
                         insertOne: () => { },
                         updateOne: () => { },
                         countDocuments: () => 0,
+                        insertMany: () => { },
                     }),
                 }
             } as any;
