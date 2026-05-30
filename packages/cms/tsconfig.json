@@ -7,7 +7,6 @@
         "isolatedModules": true,
         "emitDecoratorMetadata": true,
         "noEmit": true,
-        "baseUrl": ".",
         "paths": {
             "@/*": [
                 "./src/*"

@@ -3,7 +3,6 @@ import { ViteSSGOptions } from 'vite-ssg';
 
 import type { UserConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import vueDevTools from 'vite-plugin-vue-devtools'
 import generateFile from 'vite-plugin-generate-file'
 
 import dotenv from 'dotenv';
@@ -15,7 +14,6 @@ const config: UserConfig & { ssgOptions?: ViteSSGOptions } = {
     },
     plugins: [
         vue(),
-        vueDevTools(),
         generateFile([
             {
                 type: 'json',

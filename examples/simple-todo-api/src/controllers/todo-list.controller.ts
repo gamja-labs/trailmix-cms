@@ -6,7 +6,7 @@ import { TodoListByIdPipe } from '../pipes';
 import { TodoList } from '../models';
 import { TodoListCollection } from '../collections';
 import { AuditContext } from '@trailmix-cms/models';
-import { TodoListService } from 'src/services/todo-list.service';
+import { TodoListService } from '../services/todo-list.service';
 
 @ApiTags('todo-lists')
 @Controller('todo-lists')
