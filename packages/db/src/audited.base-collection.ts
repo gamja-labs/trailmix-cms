@@ -57,6 +57,34 @@ export abstract class AuditedCollection<T extends BaseEntity & Document> {
         });
     }
 
+    async updateMany(query: Filter<T>, update: UpdateFilter<T>, auditContext: AuditContext.Model, session?: ClientSession) {
+        const encoded = !!AuditContext.schema.encode(auditContext);
+        if (!encoded) {
+            throw new Error('Failed to encode audit context');
+        }
+        return this.databaseService.withTransaction({ session }, async (session) => {
+            const items = await this.collection.find(query, { session }).toArray();
+            const result = await this.collection.updateMany({ _id: { $in: items.map(item => item._id) } } as Filter<T>, merge(update, {
+                $set: {
+                    updated_at: new Date(),
+                } as Readonly<Partial<T>>
+            }), { session });
+            if (result.matchedCount !== items.length) {
+                throw new Error(`Failed to update ${items.length} of ${items.length} "${this.collectionName}" items with query ${JSON.stringify(query)}`);
+            }
+            for (const item of items) {
+                const auditRecord: Creatable<Audit.Entity> = {
+                    entity_id: item._id,
+                    entity_type: this.collectionName,
+                    action: 'update',
+                    context: auditContext,
+                };
+                await this.auditCollection.insertOne(auditRecord, session);
+            }
+            return result;
+        });
+    }
+
     async deleteMany(query: Filter<T>, auditContext: AuditContext.Model, session?: ClientSession) {
         const encoded = !!AuditContext.schema.encode(auditContext);
         if (!encoded) {
