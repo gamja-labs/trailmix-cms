@@ -1,5 +1,6 @@
 export * from './utils';
 export * from './base';
+export * from './versioned';
 export * from './internal-fields';
 export * from './entity';
 export * from './types';

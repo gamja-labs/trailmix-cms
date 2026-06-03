@@ -4,3 +4,4 @@ export * as Audit from './audit';
 export * as Organization from './organization';
 export * as Role from './role';
 export * as SecurityAudit from './security-audit';
+export * as Revision from './revision';

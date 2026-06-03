@@ -1,18 +1,18 @@
 import { Filter, Collection, ClientSession, FindOptions, UpdateFilter } from 'mongodb';
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { Audit } from '@trailmix-cms/models';
+import { Revision } from '@trailmix-cms/models';
 import { DocumentCollection } from '../collection.decorator';
-import { Creatable, ensureCreated } from '../utils';
+import { Creatable, ensureCreated, encodeOrThrow } from '../utils';
 import { InternalCollectionName } from '../constants';
 
-type Record = Audit.Entity
-const collectionName = InternalCollectionName.Audit;
+type Record = Revision.Entity
+const collectionName = InternalCollectionName.Revision;
 
 @Injectable()
-export class AuditCollection implements OnModuleInit {
+export class RevisionCollection implements OnModuleInit {
     private readonly logger = new Logger(this.constructor.name);
     public readonly collectionName = collectionName;
-    public readonly entitySchema = Audit.schema;
+    public readonly entitySchema = Revision.schema;
 
     constructor(
         @DocumentCollection(collectionName) protected readonly collection: Collection<Record>
@@ -22,7 +22,6 @@ export class AuditCollection implements OnModuleInit {
         this.logger.verbose(`creating custom indexes for collection_${collectionName}`)
         await this.collection.createIndex({ entity_id: 1, created_at: 1 });
         await this.collection.createIndex({ entity_type: 1, created_at: 1 });
-        await this.collection.createIndex({ account_id: 1, created_at: 1 });
     }
 
     find(filter: Filter<Record>, options?: FindOptions) {
@@ -34,11 +33,8 @@ export class AuditCollection implements OnModuleInit {
     };
 
     async insertOne(params: Creatable<Record>, session?: ClientSession) {
-        const entity = ensureCreated<Audit.Entity>(params);
-        const encoded = !!Audit.schema.encode(entity);
-        if (!encoded) {
-            throw new Error('Failed to encode audit record');
-        }
+        const entity = ensureCreated<Revision.Entity>(params);
+        encodeOrThrow(Revision.schema, entity, 'Failed to encode revision record');
         const { insertedId } = await this.collection.insertOne(entity, { session });
         const result: Record = {
             ...entity,
@@ -50,4 +46,4 @@ export class AuditCollection implements OnModuleInit {
     async findOneAndUpdate(query: Filter<Record>, update: UpdateFilter<Record>, session?: ClientSession) {
         return this.collection.findOneAndUpdate(query, update, { session, returnDocument: 'after' });
     }
-} 
+}

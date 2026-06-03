@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { Dto } from '@trailmix-cms/cms';
-import { createTestContext, teardownTestContext, TestContext } from './setup';
+import { createTestContext, teardownTestContext, TestContext } from '../setup';
 
 describe('ApiKey Integration Tests', () => {
     let ctx: TestContext;

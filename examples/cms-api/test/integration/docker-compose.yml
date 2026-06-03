@@ -21,8 +21,8 @@ services:
 
   integration-tests:
     build:
-      context: ../..
-      dockerfile: examples/cms-api/Dockerfile.integration
+      context: ../../../..
+      dockerfile: examples/cms-api/test/integration/Dockerfile.integration
     depends_on:
       mongodb:
         condition: service_healthy

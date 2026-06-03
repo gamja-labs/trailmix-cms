@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
-import * as dto from '../../src/dto';
-import { createTestContext, teardownTestContext, TestContext } from './setup';
+import * as dto from '../../../src/dto';
+import { createTestContext, teardownTestContext, TestContext } from '../setup';
 
 describe('Organization Integration Tests', () => {
     let ctx: TestContext;

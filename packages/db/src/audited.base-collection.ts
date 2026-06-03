@@ -141,7 +141,7 @@ export abstract class AuditedCollection<T extends BaseEntity & Document> {
             if (!encoded) {
                 throw new Error('Failed to encode entity');
             }
-            const { insertedId } = await this.collection.insertOne(entity, session);
+            const { insertedId } = await this.collection.insertOne(entity, { session });
             const result = {
                 ...entity,
                 _id: insertedId

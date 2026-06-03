@@ -1,6 +1,6 @@
 import { Dto } from '@trailmix-cms/cms';
-import * as dto from '../../src/dto';
-import { createTestContext, teardownTestContext, TestContext } from './setup';
+import * as dto from '../../../src/dto';
+import { createTestContext, teardownTestContext, TestContext } from '../setup';
 
 describe('Account Integration Tests', () => {
     let ctx: TestContext;

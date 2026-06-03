@@ -1,5 +1,5 @@
-import * as dto from '../../src/dto';
-import { createTestContext, teardownTestContext, TestContext } from './setup';
+import * as dto from '../../../src/dto';
+import { createTestContext, teardownTestContext, TestContext } from '../setup';
 
 describe('Status Integration Tests', () => {
     let ctx: TestContext;

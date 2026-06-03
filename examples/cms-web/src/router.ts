@@ -6,6 +6,7 @@ export const RouteName = {
     Dashboard: 'dashboard',
     Admin: 'admin',
     Organizations: 'organizations',
+    Notes: 'notes',
 } as const;
 
 export const authenticatedGuard = buildAuthenticatedGuard({
@@ -34,6 +35,11 @@ export const routes: RouteRecordRaw[] = [
                 path: '/organizations',
                 name: RouteName.Organizations,
                 component: () => import('@/views/authenticated/Organizations.vue'),
+            },
+            {
+                path: '/notes',
+                name: RouteName.Notes,
+                component: () => import('@/views/authenticated/Notes.vue'),
             },
         ],
     },

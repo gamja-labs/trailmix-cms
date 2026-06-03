@@ -47,31 +47,54 @@ jobs:
           command: monitor
 
   integration-test:
-    name: 🧪 Integration Tests
+    name: 🧪 CMS API Integration Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
       - name: Run integration tests
-        working-directory: examples/cms-api
+        working-directory: examples/cms-api/test/integration
         run: docker compose up --build --abort-on-container-exit --exit-code-from integration-tests 2>&1 | tee integration-results.log
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: integration-test-results
-          path: examples/cms-api/integration-results.log
+          path: examples/cms-api/test/integration/integration-results.log
       - name: Print test results
         if: always()
-        working-directory: examples/cms-api
+        working-directory: examples/cms-api/test/integration
         run: cat integration-results.log
       - name: Cleanup
         if: always()
-        working-directory: examples/cms-api
+        working-directory: examples/cms-api/test/integration
+        run: docker compose down -v
+
+  db-integration-test:
+    name: 🧪 DB Library Integration Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Run db integration tests
+        working-directory: packages/db/test/integration
+        run: docker compose up --build --abort-on-container-exit --exit-code-from integration-tests 2>&1 | tee integration-results.log
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-integration-test-results
+          path: packages/db/test/integration/integration-results.log
+      - name: Print test results
+        if: always()
+        working-directory: packages/db/test/integration
+        run: cat integration-results.log
+      - name: Cleanup
+        if: always()
+        working-directory: packages/db/test/integration
         run: docker compose down -v
 
   bump:
     name: 🤜 Bump packages
-    needs: [build-and-test, snyk, integration-test]
+    needs: [build-and-test, snyk, integration-test, db-integration-test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6

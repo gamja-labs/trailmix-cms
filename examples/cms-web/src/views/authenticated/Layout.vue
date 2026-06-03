@@ -22,6 +22,9 @@ const { user } = useUser();
                         <router-link :to="{ name: RouteName.Organizations }" class="nav-link">
                             Organizations
                         </router-link>
+                        <router-link :to="{ name: RouteName.Notes }" class="nav-link">
+                            Notes
+                        </router-link>
                         <router-link :to="{ name: RouteName.Admin }" class="nav-link">
                             Admin
                         </router-link>
