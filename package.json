@@ -1,6 +1,6 @@
 {
   "name": "trailmixcms",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "private": true,
   "packageManager": "yarn@4.16.0",
   "scripts": {
