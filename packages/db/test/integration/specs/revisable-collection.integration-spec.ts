@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { VersionConflictError } from '../../../src';
+import { RevisionConflictError } from '../../../src';
 import { InternalCollectionName } from '../../../src/constants';
 import { TestCollectionName } from '../entities';
 import { createTestContext, teardownTestContext, testAuditContext, TestContext } from '../setup';
@@ -13,7 +13,7 @@ async function revisionFor(ctx: TestContext, entityId: ObjectId) {
         .toArray();
 }
 
-describe('VersionedCollection (integration)', () => {
+describe('RevisableCollection (integration)', () => {
     let ctx: TestContext;
 
     beforeAll(async () => {
@@ -60,7 +60,7 @@ describe('VersionedCollection (integration)', () => {
         expect(updateRevision.update).toMatchObject({ $set: { label: 'after' } });
     });
 
-    it('findOneAndUpdate throws VersionConflictError on a stale version', async () => {
+    it('findOneAndUpdate throws RevisionConflictError on a stale version', async () => {
         const created = await ctx.gadgets.insertOne({ label: 'conflict' }, testAuditContext);
 
         // First update succeeds, bumping version to 1.
@@ -79,7 +79,7 @@ describe('VersionedCollection (integration)', () => {
                 0,
                 testAuditContext,
             ),
-        ).rejects.toBeInstanceOf(VersionConflictError);
+        ).rejects.toBeInstanceOf(RevisionConflictError);
 
         // No extra revision record should have been written for the failed update.
         const revisions = await revisionFor(ctx, created._id);
@@ -100,12 +100,12 @@ describe('VersionedCollection (integration)', () => {
         expect(revisions[1].after).toBeNull();
     });
 
-    it('deleteOne throws VersionConflictError on a stale version and keeps the record', async () => {
+    it('deleteOne throws RevisionConflictError on a stale version and keeps the record', async () => {
         const created = await ctx.gadgets.insertOne({ label: 'keep' }, testAuditContext);
 
         await expect(
             ctx.gadgets.deleteOne(created._id, created.version + 1, testAuditContext),
-        ).rejects.toBeInstanceOf(VersionConflictError);
+        ).rejects.toBeInstanceOf(RevisionConflictError);
 
         expect(await ctx.gadgets.get(created._id)).not.toBeNull();
     });

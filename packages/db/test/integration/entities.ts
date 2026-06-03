@@ -16,7 +16,7 @@ export const widgetSchema = baseEntitySchema.extend({
 export type Widget = z.infer<typeof widgetSchema>;
 
 /**
- * Versioned entity used to exercise {@link VersionedCollection}. It carries the
+ * Versioned entity used to exercise {@link RevisableCollection}. It carries the
  * `version` field via {@link versionedSchema} so optimistic-locking behaviour
  * can be tested.
  */
@@ -38,7 +38,7 @@ export const TestCollectionName = {
     Widget: 'widget',
     /** Backed by an {@link AuditedCollection}. */
     AuditedWidget: 'audited_widget',
-    /** Backed by a {@link VersionedCollection}. */
+    /** Backed by a {@link RevisableCollection}. */
     Gadget: 'gadget',
 } as const;
 

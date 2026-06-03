@@ -3,7 +3,7 @@ import { createZodDto } from 'nestjs-zod';
 import { entitySchema as NoteEntitySchema } from '../models/note';
 import { InternalFields, Revision } from '@trailmix-cms/models';
 
-// `version` is owned by the VersionedCollection, so it is never part of a create payload.
+// `version` is owned by the RevisableCollection, so it is never part of a create payload.
 const NoteWritableFields = { ...InternalFields, version: true } as const;
 
 export const CreateNoteSchema = NoteEntitySchema.omit(NoteWritableFields);

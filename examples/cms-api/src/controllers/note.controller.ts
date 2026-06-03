@@ -13,7 +13,7 @@ import { NoteByIdPipe } from '../pipes';
 import { Note } from '../models';
 import { NoteCollection } from '../collections';
 import { CollectionName } from '../constants';
-import { VersionConflictError, Collections } from '@trailmix-cms/db';
+import { RevisionConflictError, Collections } from '@trailmix-cms/db';
 import { AuditContext } from '@trailmix-cms/models';
 import { Auth, AuditContext as AuditContextDecorator } from '@trailmix-cms/cms';
 
@@ -104,7 +104,7 @@ export class NoteController {
                 auditContext,
             );
         } catch (error) {
-            if (error instanceof VersionConflictError) {
+            if (error instanceof RevisionConflictError) {
                 throw new ConflictException(error.message);
             }
             throw error;
@@ -126,7 +126,7 @@ export class NoteController {
         try {
             await this.noteCollection.deleteOne(note._id, query.version, auditContext);
         } catch (error) {
-            if (error instanceof VersionConflictError) {
+            if (error instanceof RevisionConflictError) {
                 throw new ConflictException(error.message);
             }
             throw error;

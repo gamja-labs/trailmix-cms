@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import {
     BaseCollection,
     AuditedCollection,
-    VersionedCollection,
+    RevisableCollection,
     DatabaseService,
     DocumentCollection,
     Collections,
@@ -47,11 +47,11 @@ export class AuditedWidgetCollection extends AuditedCollection<Widget> {
 }
 
 /**
- * Concrete {@link VersionedCollection} used to test optimistic locking and the
+ * Concrete {@link RevisableCollection} used to test optimistic locking and the
  * `revision` trail.
  */
 @Injectable()
-export class GadgetCollection extends VersionedCollection<Gadget> {
+export class GadgetCollection extends RevisableCollection<Gadget> {
     public readonly collectionName = TestCollectionName.Gadget;
     public readonly entitySchema = gadgetSchema;
 

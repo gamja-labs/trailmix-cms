@@ -1,6 +1,6 @@
 import { Collection } from 'mongodb';
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { DocumentCollection, DatabaseService, Collections, VersionedCollection } from '@trailmix-cms/db';
+import { DocumentCollection, DatabaseService, Collections, RevisableCollection } from '@trailmix-cms/db';
 import { Note } from '../models';
 import { CollectionName } from '../constants';
 
@@ -8,7 +8,7 @@ type Entity = Note.Entity
 const collectionName = CollectionName.Note;
 
 @Injectable()
-export class NoteCollection extends VersionedCollection<Entity> implements OnModuleInit {
+export class NoteCollection extends RevisableCollection<Entity> implements OnModuleInit {
     private readonly logger = new Logger(this.constructor.name);
     public readonly collectionName = collectionName;
     public readonly entitySchema = Note.entitySchema;
@@ -17,7 +17,7 @@ export class NoteCollection extends VersionedCollection<Entity> implements OnMod
         @DocumentCollection(collectionName)
         protected readonly collection: Collection<Entity>,
         protected readonly databaseService: DatabaseService,
-        // VersionedCollection writes a Revision record (before/after/query)
+        // RevisableCollection writes a Revision record (before/after/query)
         // for every mutation, so it needs the RevisionCollection injected.
         protected readonly revisionCollection: Collections.RevisionCollection,
     ) {

@@ -12,18 +12,18 @@ import merge from 'lodash.merge';
  * version no longer matches the version the caller expected. Callers can map
  * this to an HTTP 409 Conflict.
  */
-export class VersionConflictError extends Error {
+export class RevisionConflictError extends Error {
     constructor(
         public readonly collectionName: string,
         public readonly expectedVersion: number,
         public readonly actualVersion: number,
     ) {
         super(`Version conflict on "${collectionName}": expected version ${expectedVersion} but current version is ${actualVersion}`);
-        this.name = 'VersionConflictError';
+        this.name = 'RevisionConflictError';
     }
 }
 
-export abstract class VersionedCollection<T extends BaseEntity & Document & Versioned> {
+export abstract class RevisableCollection<T extends BaseEntity & Document & Versioned> {
     protected abstract readonly collectionName: InternalCollectionName | string;
     protected abstract readonly entitySchema: ZodType<OptionalUnlessRequiredId<T>>;
 
@@ -71,7 +71,7 @@ export abstract class VersionedCollection<T extends BaseEntity & Document & Vers
     /**
      * Finds a record matching `query`, verifies its version matches the
      * expected `version`, then applies `update` while automatically
-     * incrementing the stored version by one. Throws {@link VersionConflictError}
+     * incrementing the stored version by one. Throws {@link RevisionConflictError}
      * when the stored version does not match `version`.
      */
     async findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T>, version: number, auditContext: AuditContext.Model, session?: ClientSession) {
@@ -82,9 +82,9 @@ export abstract class VersionedCollection<T extends BaseEntity & Document & Vers
                 throw new Error(`Failed to find and update "${this.collectionName}" with query ${JSON.stringify(query)}`);
             }
             if (before.version !== version) {
-                throw new VersionConflictError(this.collectionName, version, before.version);
+                throw new RevisionConflictError(this.collectionName, version, before.version);
             }
-            const versionedUpdate = merge({}, update, {
+            const revisionUpdate = merge({}, update, {
                 $set: {
                     updated_at: new Date(),
                 } as Readonly<Partial<T>>,
@@ -94,7 +94,7 @@ export abstract class VersionedCollection<T extends BaseEntity & Document & Vers
             } as unknown as UpdateFilter<T>);
             // Keep the caller's original predicates on the write (not just _id),
             // plus the version CAS guard so the update only applies if unchanged.
-            const after = await this.collection.findOneAndUpdate({ ...query, _id: before._id, version } as Filter<T>, versionedUpdate, {
+            const after = await this.collection.findOneAndUpdate({ ...query, _id: before._id, version } as Filter<T>, revisionUpdate, {
                 session,
                 returnDocument: 'after'
             });
@@ -102,7 +102,7 @@ export abstract class VersionedCollection<T extends BaseEntity & Document & Vers
                 // The version changed between the read and the write (concurrent
                 // update); re-read to report the true current version.
                 const current = await this.collection.findOne({ _id: before._id } as Filter<T>, { session });
-                throw new VersionConflictError(this.collectionName, version, current?.version ?? before.version);
+                throw new RevisionConflictError(this.collectionName, version, current?.version ?? before.version);
             }
             const revisionRecord: Creatable<Revision.Entity> = {
                 entity_id: after._id,
@@ -121,7 +121,7 @@ export abstract class VersionedCollection<T extends BaseEntity & Document & Vers
 
     /**
      * Deletes the record identified by `entityId`, but only when its stored
-     * version matches the expected `version`. Throws {@link VersionConflictError}
+     * version matches the expected `version`. Throws {@link RevisionConflictError}
      * when the stored version does not match `version`.
      */
     async deleteOne(entityId: ObjectId, version: number, auditContext: AuditContext.Model, session?: ClientSession) {
@@ -132,7 +132,7 @@ export abstract class VersionedCollection<T extends BaseEntity & Document & Vers
                 throw new Error(`Failed to delete "${this.collectionName}" with id ${entityId}`);
             }
             if (before.version !== version) {
-                throw new VersionConflictError(this.collectionName, version, before.version);
+                throw new RevisionConflictError(this.collectionName, version, before.version);
             }
             const query = { _id: entityId, version } as Filter<T>;
             const result = await this.collection.deleteOne(query, { session });
@@ -140,7 +140,7 @@ export abstract class VersionedCollection<T extends BaseEntity & Document & Vers
                 // The version changed between the read and the write (concurrent
                 // update); re-read to report the true current version.
                 const current = await this.collection.findOne({ _id: entityId } as Filter<T>, { session });
-                throw new VersionConflictError(this.collectionName, version, current?.version ?? before.version);
+                throw new RevisionConflictError(this.collectionName, version, current?.version ?? before.version);
             }
             const revisionRecord: Creatable<Revision.Entity> = {
                 entity_id: entityId,
