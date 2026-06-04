@@ -20,7 +20,7 @@
     "vue": "^3.5.32"
   },
   "devDependencies": {
-    "@swc/cli": "^0.7.9",
+    "@swc/cli": "^0.8.1",
     "@swc/core": "^1.15.3",
     "typescript": "6.0.3",
     "vue-router": "^4.6.3"
