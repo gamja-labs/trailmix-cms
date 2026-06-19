@@ -13,8 +13,8 @@
     "trace": "tsc --traceResolution"
   },
   "dependencies": {
-    "@nestjs/common": "^11.1.24",
-    "@nestjs/core": "^11.1.24",
+    "@nestjs/common": "^11.1.26",
+    "@nestjs/core": "^11.1.26",
     "bson": "^7.2.0",
     "fastify": "5.8.5",
     "morgan": "^1.10.1",
@@ -28,8 +28,8 @@
     "typescript": "6.0.3"
   },
   "peerDependencies": {
-    "@nestjs/common": "^11.1.24",
-    "@nestjs/core": "^11.1.24",
+    "@nestjs/common": "^11.1.26",
+    "@nestjs/core": "^11.1.26",
     "fastify": "5.8.5",
     "nestjs-zod": "^5.4.0",
     "reflect-metadata": "^0.2.2",

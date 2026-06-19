@@ -36,9 +36,9 @@
     "trace": "tsc --traceResolution"
   },
   "dependencies": {
-    "@nestjs/common": "^11.1.24",
+    "@nestjs/common": "^11.1.26",
     "@nestjs/config": "^4.0.4",
-    "@nestjs/core": "^11.1.24",
+    "@nestjs/core": "^11.1.26",
     "@nestjs/swagger": "^11.4.4",
     "@trailmix-cms/db": "workspace:*",
     "@trailmix-cms/models": "workspace:*",
@@ -52,7 +52,7 @@
   },
   "devDependencies": {
     "@clerk/fastify": "^2.6.27",
-    "@nestjs/testing": "^11.1.24",
+    "@nestjs/testing": "^11.1.26",
     "@react-email/components": "^1.0.12",
     "@react-email/render": "^2.0.0",
     "@thallesp/nestjs-better-auth": "^2.6.0",
@@ -71,9 +71,9 @@
   },
   "peerDependencies": {
     "@clerk/fastify": "^2.6.27",
-    "@nestjs/common": "^11.1.24",
+    "@nestjs/common": "^11.1.26",
     "@nestjs/config": "^4.0.4",
-    "@nestjs/core": "^11.1.24",
+    "@nestjs/core": "^11.1.26",
     "@nestjs/swagger": "^11.4.4",
     "@react-email/components": "^1.0.12",
     "@react-email/render": "^2.0.0",
