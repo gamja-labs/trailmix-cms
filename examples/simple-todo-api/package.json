@@ -25,7 +25,7 @@
         "@nestjs/core": "^11.1.24",
         "@nestjs/platform-fastify": "^11.1.24",
         "@nestjs/swagger": "^11.4.4",
-        "@trailmix-cms/cms": "workspace:*",
+        "@trailmix-cms/core": "workspace:*",
         "@trailmix-cms/db": "workspace:*",
         "@trailmix-cms/models": "workspace:*",
         "@trailmix-cms/utils": "workspace:*",

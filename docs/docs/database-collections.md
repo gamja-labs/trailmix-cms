@@ -184,7 +184,7 @@ export class TodoItemCollection extends AuditedCollection<Record> implements OnM
 
 ## Next Steps
 
-- Review the [Configuration](./configuration.md) guide
+- Set up [Core](./core.md) and your auth provider ([better-auth](./better-auth.md) or [Clerk](./clerk.md))
 - Check out the [example applications](../../examples/) for complete implementations
 
 

@@ -1,19 +1,17 @@
-import * as fs from 'fs';
 import path from 'path';
 
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 
 import { clerkPlugin } from '@clerk/fastify'
 
 import { AppModule } from './app.module';
 import { requestLogger, HttpExceptionFilter } from '@trailmix-cms/utils';
+import { buildOpenApiDocument, writeOpenApiSpec } from '@trailmix-cms/core';
 import { pkg } from './utils/environment';
 import { AppConfig } from './config';
 
-import { cleanupOpenApiDoc } from 'nestjs-zod';
 import { Logger } from '@nestjs/common';
 import { Utils } from '@trailmix-cms/db';
 import { CMSCollectionName } from '@trailmix-cms/cms';
@@ -58,24 +56,16 @@ async function bootstrap() {
         apiKeyEnabled = false;
     }
 
-    const documentBuilder = new DocumentBuilder()
-        .setTitle('Trailmix CMS Example API')
-        .setDescription(`API (build ${configService.get('BUILD_ID')})`)
-        .setLicense(
-            'Apache 2.0',
-            'https://www.apache.org/licenses/LICENSE-2.0.html',
-        )
-        .setVersion(pkg.version)
-        .addBearerAuth();
-    
-    if (apiKeyEnabled) {
-        documentBuilder.addApiKey({ type: 'apiKey', in: 'header', name: 'x-api-key' }, 'api-key');
-    }
-
-    const document = cleanupOpenApiDoc(
-        SwaggerModule.createDocument(app, documentBuilder.build()),
-        { version: "3.0" }
-    );
+    const document = buildOpenApiDocument(app, {
+        title: 'Trailmix CMS Example API',
+        description: `API (build ${configService.get('BUILD_ID')})`,
+        version: pkg.version,
+        license: {
+            name: 'Apache 2.0',
+            url: 'https://www.apache.org/licenses/LICENSE-2.0.html',
+        },
+        apiKey: apiKeyEnabled ? { name: 'x-api-key' } : undefined,
+    });
 
 
     // SwaggerModule.setup('api-docs', app, document);
@@ -89,12 +79,8 @@ async function bootstrap() {
     });
 
     if (configService.get('GENERATE_SPEC')) {
-        const output = path.resolve(__dirname, '../docs/');
-        logger.log(`Generating OpenAPI Spec to ${output}...`);
-        fs.mkdirSync(output, { recursive: true });
-        fs.writeFileSync(path.resolve(output, 'api-json.json'), JSON.stringify(document));
-        logger.log(`Generating OpenAPI Spec complete.`);
-        app.close();
+        writeOpenApiSpec(document, { outputDir: path.resolve(__dirname, '../docs'), logger });
+        await app.close();
         return;
     }
 

@@ -1,0 +1,50 @@
+import { Controller, Get, Param, Logger } from '@nestjs/common';
+import { ApiOperation, ApiTags, ApiNotFoundResponse, ApiParam } from '@nestjs/swagger';
+import { ZodResponse } from 'nestjs-zod';
+import { DatabaseService, Collections } from '@trailmix-cms/db';
+import { Principal, RoleValue } from '@trailmix-cms/models';
+import { validateObjectId } from '@trailmix-cms/utils';
+
+import { Auth } from '../decorators/auth.decorator.js';
+import * as dto from '../dto/audit.dto.js';
+
+@Auth({ requiredGlobalRoles: [RoleValue.Admin], requiredPrincipalTypes: [Principal.Account, Principal.ApiKey] })
+@ApiTags('audits')
+@Controller('audits')
+export class AuditsController {
+    private readonly logger = new Logger(AuditsController.name);
+
+    constructor(
+        private readonly auditCollection: Collections.AuditCollection,
+        private readonly databaseService: DatabaseService,
+    ) { }
+
+    @Get(':type/:id')
+    @ApiParam({ name: 'type', description: 'Entity type' })
+    @ApiParam({ name: 'id', description: 'Entity ID' })
+    @ApiOperation({ summary: 'Get audit history for a record' })
+    @ZodResponse({ status: 200, description: 'Audit record found.', type: dto.AuditListResponseDto })
+    @ApiNotFoundResponse({ description: 'Audit record not found.' })
+    async getAuditRecord(
+        @Param('type') type: string,
+        @Param('id') id: string
+    ) {
+        this.logger.log(`Getting audit history for entity type: ${type} and entity ID: ${id}`);
+
+        const collections = await this.databaseService.db.listCollections().toArray();
+        const collectionNames = collections.map(c => c.name);
+        if (!collectionNames.includes(type)) {
+            this.logger.warn(`Collection type '${type}' does not exist.`);
+        }
+
+        const entityId = validateObjectId(id, { type: 'param', data: 'id' });
+        const result = await this.auditCollection.find({
+            entity_type: type,
+            entity_id: entityId
+        });
+        return {
+            items: result,
+            count: result.length,
+        };
+    }
+}

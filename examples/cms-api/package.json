@@ -33,6 +33,7 @@
         "@nestjs/swagger": "^11.4.4",
         "@openapi-studio/nestjs": "^0.6.2",
         "@trailmix-cms/cms": "workspace:*",
+        "@trailmix-cms/core": "workspace:*",
         "@trailmix-cms/db": "workspace:*",
         "@trailmix-cms/models": "workspace:*",
         "@trailmix-cms/utils": "workspace:*",

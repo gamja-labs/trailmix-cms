@@ -1,0 +1,37 @@
+{
+  "name": "core-web",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Vue 3 frontend for the core-api example — better-auth email/password auth + a revisable notes collection.",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite-ssg build",
+    "type-check": "vue-tsc --build",
+    "clean": "rm -rf dist",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@tsconfig/node24": "^24.0.3",
+    "@types/node": "^24.10.1",
+    "@unhead/vue": "^2.0.19",
+    "@vitejs/plugin-vue": "^6.0.2",
+    "@vue/tsconfig": "^0.9.1",
+    "beasties": "^0.3.5",
+    "better-auth": "^1.6.10",
+    "dotenv": "^17.2.3",
+    "prettier": "^3.8.4",
+    "sass-embedded": "^1.93.3",
+    "typescript": "6.0.3",
+    "unhead": "^2.1.13",
+    "vite": "^8.0.3",
+    "vite-plugin-generate-file": "^0.3.1",
+    "vite-ssg": "^28.3.0",
+    "vue": "^3.5.32",
+    "vue-router": "^4.6.3",
+    "vue-tsc": "^3.3.2"
+  }
+}

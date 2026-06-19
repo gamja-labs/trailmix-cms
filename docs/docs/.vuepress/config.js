@@ -20,14 +20,15 @@ export default defineUserConfig({
             '/',
             '/introduction',
             '/installation',
-            '/configuration',
             {
                 text: 'Guides',
                 children: [
                     '/database-models',
                     '/database-collections',
-                    '/controllers',
-                    '/cms-features',
+                    '/core',
+                    '/better-auth',
+                    '/clerk',
+                    '/email',
                     '/client-library-generation',
                 ],
             },
@@ -37,7 +38,6 @@ export default defineUserConfig({
             '/',
             '/introduction',
             '/installation',
-            '/configuration',
             {
                 text: 'Database',
                 children: [
@@ -46,10 +46,12 @@ export default defineUserConfig({
                 ],
             },
             {
-                text: 'CMS',
+                text: 'Core + Auth',
                 children: [
-                    '/controllers',
-                    '/cms-features',
+                    '/core',
+                    '/better-auth',
+                    '/clerk',
+                    '/email',
                 ],
             },
             '/client-library-generation',

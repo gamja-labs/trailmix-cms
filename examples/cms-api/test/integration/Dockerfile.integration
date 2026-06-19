@@ -12,10 +12,13 @@ COPY package.json yarn.lock .yarnrc.yml ./
 COPY packages/models/package.json packages/models/
 COPY packages/utils/package.json packages/utils/
 COPY packages/db/package.json packages/db/
+COPY packages/core/package.json packages/core/
 COPY packages/cms/package.json packages/cms/
 COPY packages/vue/package.json packages/vue/
 COPY examples/cms-api/package.json examples/cms-api/
 COPY examples/cms-web/package.json examples/cms-web/
+COPY examples/core-api/package.json examples/core-api/
+COPY examples/core-web/package.json examples/core-web/
 COPY examples/simple-todo-api/package.json examples/simple-todo-api/
 
 # Install dependencies
