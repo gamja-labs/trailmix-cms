@@ -33,7 +33,7 @@
         "@trailmix-cms/models": "workspace:*",
         "@trailmix-cms/utils": "workspace:*",
         "better-auth": "^1.6.10",
-        "dotenv": "^16.4.7",
+        "dotenv": "^17.4.2",
         "envalid": "^8.1.1",
         "fastify": "5.8.5",
         "mongodb": "^7.1.0",
