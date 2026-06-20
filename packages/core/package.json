@@ -1,121 +1,124 @@
 {
-  "name": "@trailmix-cms/core",
-  "version": "0.12.1",
-  "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "default": "./dist/index.js"
+    "name": "@trailmix-cms/core",
+    "version": "0.12.1",
+    "type": "module",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "default": "./dist/index.js"
+        },
+        "./better-auth": {
+            "types": "./dist/better-auth/index.d.ts",
+            "import": "./dist/better-auth/index.js",
+            "default": "./dist/better-auth/index.js"
+        },
+        "./clerk": {
+            "types": "./dist/clerk/index.d.ts",
+            "import": "./dist/clerk/index.js",
+            "default": "./dist/clerk/index.js"
+        },
+        "./email": {
+            "types": "./dist/email/index.d.ts",
+            "import": "./dist/email/index.js",
+            "default": "./dist/email/index.js"
+        }
     },
-    "./better-auth": {
-      "types": "./dist/better-auth/index.d.ts",
-      "import": "./dist/better-auth/index.js",
-      "default": "./dist/better-auth/index.js"
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/gamja-labs/trailmix-cms"
     },
-    "./clerk": {
-      "types": "./dist/clerk/index.d.ts",
-      "import": "./dist/clerk/index.js",
-      "default": "./dist/clerk/index.js"
+    "scripts": {
+        "build": "tsc -b -v",
+        "clean": "tsc -b --clean",
+        "trace": "tsc --traceResolution"
     },
-    "./email": {
-      "types": "./dist/email/index.d.ts",
-      "import": "./dist/email/index.js",
-      "default": "./dist/email/index.js"
+    "dependencies": {
+        "@nestjs/common": "^11.1.26",
+        "@nestjs/config": "^4.0.4",
+        "@nestjs/core": "^11.1.26",
+        "@nestjs/swagger": "^11.4.4",
+        "@trailmix-cms/db": "workspace:*",
+        "@trailmix-cms/models": "workspace:*",
+        "@trailmix-cms/utils": "workspace:*",
+        "envalid": "^8.1.1",
+        "mongodb": "^7.1.0",
+        "nestjs-zod": "^5.4.0",
+        "reflect-metadata": "^0.2.2",
+        "rxjs": "^7.8.2",
+        "zod": "^4.3.6"
+    },
+    "devDependencies": {
+        "@clerk/fastify": "^2.6.27",
+        "@nestjs/testing": "^11.1.26",
+        "@react-email/components": "^1.0.12",
+        "@react-email/render": "^2.0.0",
+        "@thallesp/nestjs-better-auth": "^2.6.0",
+        "@types/jest": "^30.0.0",
+        "@types/node": "^24.10.1",
+        "@types/react": "^19.0.0",
+        "@types/react-dom": "^19.0.0",
+        "better-auth": "^1.6.10",
+        "fastify": "5.8.5",
+        "jest": "^30.0.0",
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0",
+        "resend": "^6.0.0",
+        "ts-jest": "^29.4.11",
+        "typescript": "6.0.3"
+    },
+    "peerDependencies": {
+        "@clerk/fastify": "^2.6.27",
+        "@nestjs/common": "^11.1.26",
+        "@nestjs/config": "^4.0.4",
+        "@nestjs/core": "^11.1.26",
+        "@nestjs/swagger": "^11.4.4",
+        "@react-email/components": "^1.0.12",
+        "@react-email/render": "^2.0.0",
+        "@thallesp/nestjs-better-auth": "^2.6.0",
+        "@trailmix-cms/db": "workspace:*",
+        "@trailmix-cms/models": "workspace:*",
+        "@trailmix-cms/utils": "workspace:*",
+        "better-auth": "^1.6.10",
+        "envalid": "^8.1.1",
+        "mongodb": "^7.1.0",
+        "nestjs-zod": "^5.4.0",
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0",
+        "reflect-metadata": "^0.2.2",
+        "resend": "^6.0.0",
+        "rxjs": "^7.8.2",
+        "zod": "^4.3.6"
+    },
+    "peerDependenciesMeta": {
+        "@clerk/fastify": {
+            "optional": true
+        },
+        "@react-email/components": {
+            "optional": true
+        },
+        "@react-email/render": {
+            "optional": true
+        },
+        "@thallesp/nestjs-better-auth": {
+            "optional": true
+        },
+        "better-auth": {
+            "optional": true
+        },
+        "react": {
+            "optional": true
+        },
+        "react-dom": {
+            "optional": true
+        },
+        "resend": {
+            "optional": true
+        },
+        "publishConfig": {
+            "provenance": true
+        }
     }
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/gamja-labs/trailmix-cms"
-  },
-  "scripts": {
-    "build": "tsc -b -v",
-    "clean": "tsc -b --clean",
-    "trace": "tsc --traceResolution"
-  },
-  "dependencies": {
-    "@nestjs/common": "^11.1.26",
-    "@nestjs/config": "^4.0.4",
-    "@nestjs/core": "^11.1.26",
-    "@nestjs/swagger": "^11.4.4",
-    "@trailmix-cms/db": "workspace:*",
-    "@trailmix-cms/models": "workspace:*",
-    "@trailmix-cms/utils": "workspace:*",
-    "envalid": "^8.1.1",
-    "mongodb": "^7.1.0",
-    "nestjs-zod": "^5.4.0",
-    "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.2",
-    "zod": "^4.3.6"
-  },
-  "devDependencies": {
-    "@clerk/fastify": "^2.6.27",
-    "@nestjs/testing": "^11.1.26",
-    "@react-email/components": "^1.0.12",
-    "@react-email/render": "^2.0.0",
-    "@thallesp/nestjs-better-auth": "^2.6.0",
-    "@types/jest": "^30.0.0",
-    "@types/node": "^24.10.1",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
-    "better-auth": "^1.6.10",
-    "fastify": "5.8.5",
-    "jest": "^30.0.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "resend": "^6.0.0",
-    "ts-jest": "^29.4.11",
-    "typescript": "6.0.3"
-  },
-  "peerDependencies": {
-    "@clerk/fastify": "^2.6.27",
-    "@nestjs/common": "^11.1.26",
-    "@nestjs/config": "^4.0.4",
-    "@nestjs/core": "^11.1.26",
-    "@nestjs/swagger": "^11.4.4",
-    "@react-email/components": "^1.0.12",
-    "@react-email/render": "^2.0.0",
-    "@thallesp/nestjs-better-auth": "^2.6.0",
-    "@trailmix-cms/db": "workspace:*",
-    "@trailmix-cms/models": "workspace:*",
-    "@trailmix-cms/utils": "workspace:*",
-    "better-auth": "^1.6.10",
-    "envalid": "^8.1.1",
-    "mongodb": "^7.1.0",
-    "nestjs-zod": "^5.4.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "reflect-metadata": "^0.2.2",
-    "resend": "^6.0.0",
-    "rxjs": "^7.8.2",
-    "zod": "^4.3.6"
-  },
-  "peerDependenciesMeta": {
-    "@clerk/fastify": {
-      "optional": true
-    },
-    "@react-email/components": {
-      "optional": true
-    },
-    "@react-email/render": {
-      "optional": true
-    },
-    "@thallesp/nestjs-better-auth": {
-      "optional": true
-    },
-    "better-auth": {
-      "optional": true
-    },
-    "react": {
-      "optional": true
-    },
-    "react-dom": {
-      "optional": true
-    },
-    "resend": {
-      "optional": true
-    }
-  }
 }
