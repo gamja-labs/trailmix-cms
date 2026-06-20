@@ -1,6 +1,9 @@
 {
     "packages": [
         {
+            "path": "./packages/core"
+        },
+        {
             "path": "./packages/cms"
         },
         {

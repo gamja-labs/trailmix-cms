@@ -20,6 +20,7 @@ jobs:
       - run: yarn install --immutable
       - run: yarn ci
 
+      - run: cd ./packages/core && yarn npm publish --access public
       - run: cd ./packages/cms && yarn npm publish --access public
       - run: cd ./packages/db && yarn npm publish --access public
       - run: cd ./packages/models && yarn npm publish --access public
