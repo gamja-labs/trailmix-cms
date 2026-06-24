@@ -23,7 +23,7 @@
     "@swc/cli": "^0.7.9",
     "@swc/core": "^1.15.3",
     "typescript": "6.0.3",
-    "vue-router": "^4.6.3"
+    "vue-router": "^5.1.0"
   },
   "peerDependencies": {
     "@clerk/vue": "^2.3.1",
