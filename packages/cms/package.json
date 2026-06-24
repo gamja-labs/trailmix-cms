@@ -33,7 +33,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@babel/core": "^7.29.0",
+    "@babel/core": "^8.0.1",
     "@faker-js/faker": "^9.0.0",
     "@nestjs/testing": "^11.1.26",
     "@types/babel__core": "^7",
