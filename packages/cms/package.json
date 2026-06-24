@@ -40,7 +40,7 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^24.10.1",
     "babel-jest": "^30.3.0",
-    "dayjs": "^1.11.19",
+    "dayjs": "^1.11.21",
     "fastify": "5.8.5",
     "jest": "^30.0.0",
     "jest-util": "^30.2.0",
