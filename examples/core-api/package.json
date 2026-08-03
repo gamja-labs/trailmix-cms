@@ -19,7 +19,7 @@
         "test:integration:docker": "docker compose -f test/integration/docker-compose.yml run --rm --build integration-tests; docker compose -f test/integration/docker-compose.yml down -v"
     },
     "dependencies": {
-        "@fastify/static": "^9.0.0",
+        "@fastify/static": "^10.1.2",
         "@nestjs/common": "^11.1.26",
         "@nestjs/config": "^4.0.4",
         "@nestjs/core": "^11.1.26",

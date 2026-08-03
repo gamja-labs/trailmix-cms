@@ -108,6 +108,7 @@
     "better-auth": {
       "optional": true
     },
+    "publishConfig": {},
     "react": {
       "optional": true
     },
@@ -116,9 +117,6 @@
     },
     "resend": {
       "optional": true
-    },
-    "publishConfig": {
-      "provenance": true
     }
   }
 }
