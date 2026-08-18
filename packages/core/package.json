@@ -36,23 +36,23 @@
     "trace": "tsc --traceResolution"
   },
   "dependencies": {
-    "@nestjs/common": "^11.1.26",
+    "@nestjs/common": "^11.1.28",
     "@nestjs/config": "^4.0.4",
-    "@nestjs/core": "^11.1.26",
+    "@nestjs/core": "^11.1.28",
     "@nestjs/swagger": "^11.4.4",
     "@trailmix-cms/db": "workspace:*",
     "@trailmix-cms/models": "workspace:*",
     "@trailmix-cms/utils": "workspace:*",
-    "envalid": "^8.1.1",
-    "mongodb": "^7.1.0",
-    "nestjs-zod": "^5.4.0",
+    "envalid": "^8.2.0",
+    "mongodb": "^7.5.0",
+    "nestjs-zod": "^5.5.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
-    "zod": "^4.3.6"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@clerk/fastify": "^2.6.27",
-    "@nestjs/testing": "^11.1.26",
+    "@clerk/fastify": "^3.1.62",
+    "@nestjs/testing": "^11.1.28",
     "@react-email/components": "^1.0.12",
     "@react-email/render": "^2.0.0",
     "@thallesp/nestjs-better-auth": "^2.6.0",
@@ -61,7 +61,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "better-auth": "^1.6.10",
-    "fastify": "5.8.5",
+    "fastify": "5.11.0",
     "jest": "^30.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -70,10 +70,10 @@
     "typescript": "6.0.3"
   },
   "peerDependencies": {
-    "@clerk/fastify": "^2.6.27",
-    "@nestjs/common": "^11.1.26",
+    "@clerk/fastify": "^3.1.62",
+    "@nestjs/common": "^11.1.28",
     "@nestjs/config": "^4.0.4",
-    "@nestjs/core": "^11.1.26",
+    "@nestjs/core": "^11.1.28",
     "@nestjs/swagger": "^11.4.4",
     "@react-email/components": "^1.0.12",
     "@react-email/render": "^2.0.0",
@@ -82,15 +82,15 @@
     "@trailmix-cms/models": "workspace:*",
     "@trailmix-cms/utils": "workspace:*",
     "better-auth": "^1.6.10",
-    "envalid": "^8.1.1",
-    "mongodb": "^7.1.0",
-    "nestjs-zod": "^5.4.0",
+    "envalid": "^8.2.0",
+    "mongodb": "^7.5.0",
+    "nestjs-zod": "^5.5.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "reflect-metadata": "^0.2.2",
     "resend": "^6.0.0",
     "rxjs": "^7.8.2",
-    "zod": "^4.3.6"
+    "zod": "^4.4.3"
   },
   "peerDependenciesMeta": {
     "@clerk/fastify": {

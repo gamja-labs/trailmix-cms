@@ -15,19 +15,19 @@
     "test:integration:docker": "docker compose -f test/integration/docker-compose.yml run --rm --build integration-tests; docker compose -f test/integration/docker-compose.yml down -v"
   },
   "dependencies": {
-    "@nestjs/common": "^11.1.26",
+    "@nestjs/common": "^11.1.28",
     "@nestjs/config": "^4.0.4",
     "@trailmix-cms/models": "workspace:*",
-    "envalid": "^8.1.1",
+    "envalid": "^8.2.0",
     "lodash.merge": "^4.6.2",
-    "mongodb": "^7.1.0",
+    "mongodb": "^7.5.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
-    "zod": "^4.3.6"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@nestjs/core": "^11.1.26",
-    "@nestjs/testing": "^11.1.26",
+    "@nestjs/core": "^11.1.28",
+    "@nestjs/testing": "^11.1.28",
     "@types/jest": "^30.0.0",
     "@types/lodash.merge": "^4.6.9",
     "@types/node": "^24.10.1",
@@ -37,13 +37,13 @@
     "typescript": "6.0.3"
   },
   "peerDependencies": {
-    "@nestjs/common": "^11.1.26",
+    "@nestjs/common": "^11.1.28",
     "@nestjs/config": "^4.0.4",
     "@trailmix-cms/models": "workspace:*",
-    "mongodb": "^7.1.0",
+    "mongodb": "^7.5.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
-    "zod": "^4.3.6"
+    "zod": "^4.4.3"
   },
   "publishConfig": {
     "provenance": true
