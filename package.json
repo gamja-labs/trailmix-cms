@@ -7,6 +7,7 @@
     "test": "yarn workspaces foreach --topological --all --exclude core-web --exclude cms-web run test",
     "build": "yarn workspaces foreach --topological --all --exclude core-web --exclude cms-web run build",
     "ci": "yarn build",
+    "test:e2e": "./test/e2e/run.sh",
     "clean:all": "yarn workspaces foreach --all run clean"
   },
   "workspaces": [

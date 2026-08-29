@@ -92,9 +92,31 @@ jobs:
         working-directory: packages/db/test/integration
         run: docker compose down -v
 
+  e2e-test:
+    name: 🧪 Full-stack E2E Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Run e2e suite
+        # `shell: bash` is what supplies `-o pipefail`; the default shell omits it, so without
+        # this the `tee` would swallow a failing suite's exit code and the job would pass anyway.
+        # Invoked via `bash` rather than `./` so the checkout's file mode can't break the run.
+        shell: bash
+        run: bash test/e2e/run.sh 2>&1 | tee test/e2e/e2e-results.log
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-test-results
+          path: |
+            test/e2e/e2e-results.log
+            test/e2e/report/
+            test/e2e/test-results/
+      # No cleanup step: run.sh tears the stack down itself from an EXIT trap, failures included.
+
   bump:
     name: 🤜 Bump packages
-    needs: [build-and-test, snyk, integration-test, db-integration-test]
+    needs: [build-and-test, snyk, integration-test, db-integration-test, e2e-test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6

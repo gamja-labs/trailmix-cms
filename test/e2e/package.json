@@ -1,0 +1,13 @@
+{
+    "name": "trailmix-e2e",
+    "version": "0.0.0",
+    "private": true,
+    "description": "Docker Compose end-to-end suite: builds core-api + core-web from source and drives the real auth and API flows.",
+    "scripts": {
+        "test": "playwright test"
+    },
+    "devDependencies": {
+        "@playwright/test": "1.62.1",
+        "@types/node": "24.13.3"
+    }
+}

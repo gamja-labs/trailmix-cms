@@ -1,0 +1,124 @@
+# Full-stack end-to-end environment for the core-api + core-web examples.
+#
+# Topology
+# --------
+#   mongodb   :27017   mongo:8 single-node replica set (`rs0`) — the revisable collections use
+#                      transactions, which require a replica set even for one node.
+#   core-api  :4001    the real NestJS app, built from monorepo source.
+#   core-web  :8080    nginx serving the prerendered core-web SPA.
+#             :8081    nginx reverse-proxying core-api — see "Why one host, two ports" below.
+#   e2e                Playwright: drives the SPA in headless Chromium and hits the API directly.
+#
+# Why one host, two ports
+# -----------------------
+# better-auth is cookie-based. Locally core-web (localhost:5175) and core-api (localhost:4001)
+# are different *origins* but the same *site*, so the default `SameSite=Lax` session cookie is
+# sent on the SPA's credentialed XHRs. If the two containers had distinct hostnames
+# (`core-web` / `core-api`) they would be cross-*site*, the cookie would need
+# `SameSite=None; Secure`, and Secure is impossible over plain http — auth would silently fail
+# for reasons that have nothing to do with the code under test.
+#
+# So the `core-web` container is the browser-facing edge for both: the SPA on :8080 and a
+# transparent proxy to core-api on :8081. Same host, two ports — exactly the local dev
+# relationship, and the cookie behaves the same way it does in production behind a real edge.
+name: trailmix-e2e
+
+services:
+    mongodb:
+        image: mongo:8
+        command: ['mongod', '--replSet', 'rs0', '--bind_ip_all']
+        # First probe throws (no replica set yet), initiates it, and fails so compose retries;
+        # the next probe sees `rs.status().ok === 1` and reports healthy.
+        healthcheck:
+            test: |
+                mongosh --eval "
+                  try {
+                    var status = rs.status();
+                    if (status.ok === 1) quit(0);
+                    else quit(1);
+                  } catch(e) {
+                    rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: 'mongodb:27017' }] });
+                    quit(1);
+                  }
+                " --quiet
+            interval: 5s
+            timeout: 10s
+            retries: 20
+            start_period: 5s
+
+    core-api:
+        build:
+            context: ../..
+            dockerfile: test/e2e/Dockerfile
+            target: core-api
+        depends_on:
+            mongodb:
+                condition: service_healthy
+        environment:
+            NODE_ENV: test
+            PORT: 4001
+            # The API's public base URL *as the browser sees it* — i.e. through the edge on :8081.
+            # better-auth signs cookies/callbacks against this, and the proxy preserves the Host
+            # header so the incoming requests match.
+            SERVICE_HOST: http://core-web:8081
+            BETTER_AUTH_URL: http://core-web:8081
+            # Origin the SPA is served from. core-api registers this as a better-auth trusted
+            # origin and as the credentialed-CORS allow-list entry.
+            WEB_ORIGIN: http://core-web:8080
+            BETTER_AUTH_SECRET: e2e-only-secret-do-not-use-outside-tests
+            MONGODB_CONNECTION_STRING: mongodb://mongodb:27017/?replicaSet=rs0
+            MONGODB_DATABASE_NAME: core_api_e2e
+            GENERATE_SPEC: 'false'
+            # No RESEND_API_KEY -> core-api falls back to LogEmailSender, so verification /
+            # invitation mail is logged instead of sent. Nothing leaves the compose network.
+        healthcheck:
+            test:
+                [
+                    'CMD',
+                    'node',
+                    '-e',
+                    "fetch('http://127.0.0.1:4001/status').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+                ]
+            interval: 5s
+            timeout: 5s
+            retries: 30
+            start_period: 10s
+
+    core-web:
+        build:
+            context: ../..
+            dockerfile: test/e2e/Dockerfile
+            target: core-web
+            args:
+                # Vite inlines this at build time, so the SPA bundle is pinned to the edge URL.
+                VITE_SERVICE_HOST: http://core-web:8081
+                VITE_BUILD_ID: e2e
+        depends_on:
+            # nginx resolves `core-api` when it loads the config, so the API must exist first.
+            core-api:
+                condition: service_healthy
+        healthcheck:
+            test: ['CMD', 'wget', '--spider', '-q', 'http://127.0.0.1:8080/']
+            interval: 5s
+            timeout: 5s
+            retries: 20
+            start_period: 3s
+
+    e2e:
+        build:
+            context: .
+            dockerfile: Dockerfile.e2e
+        depends_on:
+            core-web:
+                condition: service_healthy
+        environment:
+            E2E_WEB_URL: http://core-web:8080
+            E2E_API_URL: http://core-web:8081
+            CI: 'true'
+        # Chromium's renderer uses shared memory heavily; Docker's 64MB default makes it crash
+        # on content-heavy pages. (playwright.config.ts also passes --disable-dev-shm-usage.)
+        shm_size: 1gb
+        volumes:
+            # Traces, screenshots and the HTML report land on the host for post-mortem.
+            - ./report:/e2e/report
+            - ./test-results:/e2e/test-results

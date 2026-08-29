@@ -1,0 +1,23 @@
+# syntax=docker/dockerfile:1
+#
+# The test runner: Playwright + headless Chromium. Deliberately outside the yarn workspace graph
+# — it tests the monorepo from the outside, over HTTP, and has no reason to appear in the
+# monorepo's lockfile or in `yarn workspaces foreach` runs.
+# Debian 12 — the official Node images have no Ubuntu variant, and `playwright install
+# --with-deps` knows how to install Chromium's system libraries on bookworm.
+FROM node:24-bookworm
+
+WORKDIR /e2e
+
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+
+COPY package.json ./
+RUN npm install --no-audit --no-fund
+
+# Installs the browser build matching the resolved @playwright/test version, plus the system
+# libraries Chromium needs on Debian.
+RUN npx playwright install --with-deps chromium
+
+COPY . .
+
+CMD ["npx", "playwright", "test"]
