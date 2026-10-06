@@ -1,5 +1,5 @@
 import { betterAuth, type BetterAuthOptions, type BetterAuthPlugin } from 'better-auth';
-import { admin, openAPI, organization } from 'better-auth/plugins';
+import { admin, bearer, openAPI, organization } from 'better-auth/plugins';
 import {
     type EmailSender,
     type EmailBranding,
@@ -15,6 +15,7 @@ import {
 type OrganizationOptions = NonNullable<Parameters<typeof organization>[0]>;
 type AdminOptions = Parameters<typeof admin>[0];
 type OpenAPIOptions = Parameters<typeof openAPI>[0];
+type BearerOptions = Parameters<typeof bearer>[0];
 
 export interface TrailmixPluginsOptions {
     /** Enable the better-auth organization plugin. `true` uses defaults; pass an object to configure it. */
@@ -23,11 +24,19 @@ export interface TrailmixPluginsOptions {
     admin?: boolean | AdminOptions;
     /** Enable the better-auth OpenAPI plugin (Scalar reference at `/api/auth/reference`). */
     openAPI?: boolean | OpenAPIOptions;
+    /**
+     * Enable the better-auth bearer plugin, so clients can authenticate with an
+     * `Authorization: Bearer <session token>` header instead of cookies. This lets a frontend call
+     * an API/backend on a different domain, where cross-site cookies are unreliable.
+     * **Enabled by default** — pass `false` to opt out, or an object to configure it.
+     */
+    bearer?: boolean | BearerOptions;
 }
 
 /**
  * Build the better-auth plugin array for the Trailmix-supported plugins
- * (organization, admin, OpenAPI), in a stable order.
+ * (organization, admin, OpenAPI, bearer), in a stable order. Bearer is on unless
+ * `bearer: false` is passed; the others are opt-in.
  *
  * Compose with your own plugins when calling `betterAuth`:
  * ```ts
@@ -44,6 +53,10 @@ export function trailmixPlugins(options: TrailmixPluginsOptions = {}): BetterAut
     }
     if (options.openAPI) {
         plugins.push(openAPI(typeof options.openAPI === 'object' ? options.openAPI : undefined));
+    }
+    const bearerOption = options.bearer ?? true;
+    if (bearerOption) {
+        plugins.push(bearer(typeof bearerOption === 'object' ? bearerOption : undefined));
     }
     return plugins;
 }
@@ -168,7 +181,8 @@ function withInvitationEmail(
 
 /**
  * Builds a better-auth **configuration object** preconfigured for Trailmix: the MongoDB
- * adapter, sensible defaults, the opted-in organization / admin / OpenAPI plugins, and — when an
+ * adapter, sensible defaults, the bearer plugin (on by default), the opted-in organization /
+ * admin / OpenAPI plugins, and — when an
  * `emailSender` is provided — the built-in verification / reset / invitation email templates.
  *
  * This intentionally returns config rather than an instance — you own instance creation,
@@ -195,6 +209,7 @@ export function createTrailmixAuthConfig(options: CreateTrailmixAuthConfigOption
         organization: organizationOption,
         admin: adminOption,
         openAPI: openAPIOption,
+        bearer: bearerOption,
         plugins = [],
         emailSender,
         email,
@@ -238,6 +253,7 @@ export function createTrailmixAuthConfig(options: CreateTrailmixAuthConfigOption
                 ),
                 admin: adminOption,
                 openAPI: openAPIOption,
+                bearer: bearerOption,
             }),
             ...(plugins ?? []),
         ],
@@ -253,7 +269,7 @@ export type TrailmixAuthConfig = Omit<CreateTrailmixAuthConfigOptions, 'database
 /**
  * Builds the better-auth **instance** from the database adapter `setupTrailmixAuth` hands your
  * `createAuth` plus your {@link TrailmixAuthConfig}. Call it inside `createAuth` for the Trailmix
- * defaults (organization/admin/OpenAPI plugins + optional email templates) without spelling them out.
+ * defaults (bearer + organization/admin/OpenAPI plugins + optional email templates) without spelling them out.
  *
  * @example
  * ```ts

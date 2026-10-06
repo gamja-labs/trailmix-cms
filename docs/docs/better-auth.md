@@ -92,12 +92,19 @@ trailmixPlugins({
 });
 ```
 
+The **bearer** plugin is enabled by default, so clients can send `Authorization: Bearer <token>`
+instead of relying on cookies. That's what lets a frontend call an API on a different domain,
+where cross-site cookies are unreliable. better-auth returns the session token in the
+`set-auth-token` response header on sign-in. Pass `bearer: false` to turn it off, or an options
+object (e.g. `{ requireSignature: true }`) to configure it.
+
 ### Options
 
 | Option (`createTrailmixAuth`) | Description |
 | --- | --- |
 | `secret` / `baseURL` | better-auth secret + base URL (see [config](#configuration)). |
 | `organization` / `admin` / `openAPI` | `true` or a plugin options object. |
+| `bearer` | Bearer-token auth. **On by default**; `false` disables it, or pass plugin options. |
 | `emailSender` | An [`EmailSender`](./email.md) — wires the verification / reset / invitation emails. |
 | `email` | Branding, per-template overrides, and invitation-URL tweaks for the built-in templates. |
 | `plugins` | Extra better-auth plugins to register alongside the Trailmix ones. |

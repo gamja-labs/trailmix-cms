@@ -14,7 +14,9 @@ better-auth integration for Trailmix, built on
 - **Config helpers** – `createTrailmixAuth(database, config)` builds the better-auth **instance**
   (Trailmix plugins + defaults) from the adapter Trailmix hands you; `createTrailmixAuthConfig(...)`
   returns just the config object; `trailmixPlugins(...)` is the lower-level plugin builder. Use
-  whichever level of control you want inside `createAuth`.
+  whichever level of control you want inside `createAuth`. The better-auth **bearer** plugin is on
+  by default (`bearer: false` to disable), so frontends on a different domain can authenticate
+  with `Authorization: Bearer <token>` instead of cross-site cookies.
 - **OpenAPI helpers** – `TrailmixOpenApi.buildDocument(app, ...)` builds a `@nestjs/swagger`
   document and folds better-auth's endpoints into it, resolving the auth instance from the app
   container. Lower-level `buildOpenApiDocument(...)` / `mergeBetterAuthOpenAPISchema(...)` /
