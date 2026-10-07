@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@clerk/vue": "^2.3.1",
-    "vue": "^3.5.32"
+    "vue": "^3.5.43"
   },
   "devDependencies": {
     "@swc/cli": "^0.7.9",
@@ -27,7 +27,7 @@
   },
   "peerDependencies": {
     "@clerk/vue": "^2.3.1",
-    "vue": "^3.5.32"
+    "vue": "^3.5.43"
   },
   "publishConfig": {
     "provenance": true
