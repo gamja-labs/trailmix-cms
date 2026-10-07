@@ -2309,11 +2309,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/common@npm:^11.1.28":
-  version: 11.1.29
-  resolution: "@nestjs/common@npm:11.1.29"
+"@nestjs/common@npm:^12.1.2":
+  version: 12.1.2
+  resolution: "@nestjs/common@npm:12.1.2"
   dependencies:
-    file-type: "npm:21.3.4"
+    "@standard-schema/spec": "npm:1.1.0"
+    file-type: "npm:22.1.1"
     iterare: "npm:1.2.1"
     load-esm: "npm:1.0.3"
     tslib: "npm:2.8.1"
@@ -2328,7 +2329,7 @@ __metadata:
       optional: true
     class-validator:
       optional: true
-  checksum: 10c0/5f1c65c6b07a2e9f2380cf322431a62baf761c0279eb4dee8fdee90e84347235ebde9264f8e635a2db48dac3855b31e9c3aac6af6ae50290d467f71b42326c86
+  checksum: 10c0/94675f98943b2414a2cffee5efc909280e57a36163ea54c037052345f4d0fb6d66c354074f2cd2e3cb8edfe0dc537e3bca994bd2a27804a8c62ff23a5411ace3
   languageName: node
   linkType: hard
 
@@ -3192,7 +3193,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@standard-schema/spec@npm:^1.1.0":
+"@standard-schema/spec@npm:1.1.0, @standard-schema/spec@npm:^1.1.0":
   version: 1.1.0
   resolution: "@standard-schema/spec@npm:1.1.0"
   checksum: 10c0/d90f55acde4b2deb983529c87e8025fa693de1a5e8b49ecc6eb84d1fd96328add0e03d7d551442156c7432fd78165b2c26ff561b970a9a881f046abb78d6a526
@@ -3437,7 +3438,7 @@ __metadata:
     "@babel/core": "npm:^7.29.0"
     "@clerk/fastify": "npm:^3.1.62"
     "@faker-js/faker": "npm:^9.0.0"
-    "@nestjs/common": "npm:^11.1.28"
+    "@nestjs/common": "npm:^12.1.2"
     "@nestjs/config": "npm:^4.0.4"
     "@nestjs/core": "npm:^11.1.28"
     "@nestjs/swagger": "npm:^11.4.4"
@@ -3465,7 +3466,7 @@ __metadata:
     zod: "npm:^4.4.3"
   peerDependencies:
     "@clerk/fastify": ^3.1.62
-    "@nestjs/common": ^11.1.28
+    "@nestjs/common": ^12.1.2
     "@nestjs/config": ^4.0.4
     "@trailmix-cms/db": "workspace:*"
     "@trailmix-cms/models": "workspace:*"
@@ -3483,7 +3484,7 @@ __metadata:
   resolution: "@trailmix-cms/core@workspace:packages/core"
   dependencies:
     "@clerk/fastify": "npm:^3.1.62"
-    "@nestjs/common": "npm:^11.1.28"
+    "@nestjs/common": "npm:^12.1.2"
     "@nestjs/config": "npm:^4.0.4"
     "@nestjs/core": "npm:^11.1.28"
     "@nestjs/swagger": "npm:^11.4.4"
@@ -3514,7 +3515,7 @@ __metadata:
     zod: "npm:^4.4.3"
   peerDependencies:
     "@clerk/fastify": ^3.1.62
-    "@nestjs/common": ^11.1.28
+    "@nestjs/common": ^12.1.2
     "@nestjs/config": ^4.0.4
     "@nestjs/core": ^11.1.28
     "@nestjs/swagger": ^11.4.4
@@ -3558,7 +3559,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@trailmix-cms/db@workspace:packages/db"
   dependencies:
-    "@nestjs/common": "npm:^11.1.28"
+    "@nestjs/common": "npm:^12.1.2"
     "@nestjs/config": "npm:^4.0.4"
     "@nestjs/core": "npm:^11.1.28"
     "@nestjs/testing": "npm:^11.1.28"
@@ -3577,7 +3578,7 @@ __metadata:
     typescript: "npm:6.0.3"
     zod: "npm:^4.4.3"
   peerDependencies:
-    "@nestjs/common": ^11.1.28
+    "@nestjs/common": ^12.1.2
     "@nestjs/config": ^4.0.4
     "@trailmix-cms/models": "workspace:*"
     mongodb: ^7.5.0
@@ -3601,7 +3602,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@trailmix-cms/utils@workspace:packages/utils"
   dependencies:
-    "@nestjs/common": "npm:^11.1.28"
+    "@nestjs/common": "npm:^12.1.2"
     "@nestjs/core": "npm:^11.1.28"
     "@types/morgan": "npm:^1.9.10"
     bson: "npm:^7.2.0"
@@ -3613,7 +3614,7 @@ __metadata:
     typescript: "npm:6.0.3"
     zod: "npm:^4.4.3"
   peerDependencies:
-    "@nestjs/common": ^11.1.28
+    "@nestjs/common": ^12.1.2
     "@nestjs/core": ^11.1.28
     fastify: 5.11.3
     nestjs-zod: ^5.5.0
@@ -5701,7 +5702,7 @@ __metadata:
     "@eslint/js": "npm:^9.18.0"
     "@fastify/static": "npm:^10.1.2"
     "@nestjs/cli": "npm:^11.0.24"
-    "@nestjs/common": "npm:^11.1.28"
+    "@nestjs/common": "npm:^12.1.2"
     "@nestjs/config": "npm:^4.0.4"
     "@nestjs/core": "npm:^11.1.28"
     "@nestjs/platform-fastify": "npm:11.2.1"
@@ -5951,7 +5952,7 @@ __metadata:
   dependencies:
     "@fastify/static": "npm:^10.1.2"
     "@nestjs/cli": "npm:^11.0.24"
-    "@nestjs/common": "npm:^11.1.28"
+    "@nestjs/common": "npm:^12.1.2"
     "@nestjs/config": "npm:^4.0.4"
     "@nestjs/core": "npm:^11.1.28"
     "@nestjs/platform-fastify": "npm:11.2.1"
@@ -6955,15 +6956,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"file-type@npm:21.3.4":
-  version: 21.3.4
-  resolution: "file-type@npm:21.3.4"
+"file-type@npm:22.1.1":
+  version: 22.1.1
+  resolution: "file-type@npm:22.1.1"
   dependencies:
     "@tokenizer/inflate": "npm:^0.4.1"
-    strtok3: "npm:^10.3.4"
-    token-types: "npm:^6.1.1"
-    uint8array-extras: "npm:^1.4.0"
-  checksum: 10c0/6f15e7538c5d73f9308d2e897365d253a6647a6751bb1b0d85c78aebc02b8976afb7c6c9b3759687a064b1b3d60246e5504746b8f11e38b0d5a1b339087e00d2
+    strtok3: "npm:^10.3.5"
+    token-types: "npm:^6.1.2"
+    uint8array-extras: "npm:^1.5.0"
+  checksum: 10c0/ab917e88d00f4ce33c90d95d1c41fbb96a91e6ae247fdf7ee3d4deb68b3ba7162dd9be0a2fa9e79ac037bbaae4f581a035f071e585f111ac064f0c0f9e7273d4
   languageName: node
   linkType: hard
 
@@ -10952,7 +10953,7 @@ __metadata:
     "@eslint/js": "npm:^9.18.0"
     "@fastify/static": "npm:^10.1.2"
     "@nestjs/cli": "npm:^11.0.24"
-    "@nestjs/common": "npm:^11.1.28"
+    "@nestjs/common": "npm:^12.1.2"
     "@nestjs/config": "npm:^4.0.4"
     "@nestjs/core": "npm:^11.1.28"
     "@nestjs/platform-fastify": "npm:11.2.1"
@@ -11280,12 +11281,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"strtok3@npm:^10.2.0, strtok3@npm:^10.3.4":
+"strtok3@npm:^10.2.0":
   version: 10.3.4
   resolution: "strtok3@npm:10.3.4"
   dependencies:
     "@tokenizer/token": "npm:^0.3.0"
   checksum: 10c0/277ab69e417f4545e364ffaf9d560c991f531045dbace32d77b5c822cccd76a608b782785a2c60595274288d4d32dced184a5c21dc20348791da697127dc69a8
+  languageName: node
+  linkType: hard
+
+"strtok3@npm:^10.3.5":
+  version: 10.3.5
+  resolution: "strtok3@npm:10.3.5"
+  dependencies:
+    "@tokenizer/token": "npm:^0.3.0"
+  checksum: 10c0/8d2477b239054c9f1f5b14a65d531147ca158ab9887fdc2d0938e77b7ec8891fb683b58254c7643afd5d98a421a59207534d491762b111f58c795071ecbe9fd1
   languageName: node
   linkType: hard
 
@@ -11666,7 +11676,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"token-types@npm:^6.1.1":
+"token-types@npm:^6.1.1, token-types@npm:^6.1.2":
   version: 6.1.2
   resolution: "token-types@npm:6.1.2"
   dependencies:
@@ -11927,6 +11937,13 @@ __metadata:
   version: 1.5.0
   resolution: "uint8array-extras@npm:1.5.0"
   checksum: 10c0/0e74641ac7dadb02eadefc1ccdadba6010e007757bda824960de3c72bbe2b04e6d3af75648441f412148c4103261d54fcb60be45a2863beb76643a55fddba3bd
+  languageName: node
+  linkType: hard
+
+"uint8array-extras@npm:^1.5.0":
+  version: 1.6.0
+  resolution: "uint8array-extras@npm:1.6.0"
+  checksum: 10c0/d53177c025ebea31af1e445abd474027b66341a56f207f352a5a486aa1d492e228bbc883dc4a51ea8358bb88d60a019351e20a92dd17c2ef8326e29fbad57127
   languageName: node
   linkType: hard
 
