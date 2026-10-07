@@ -19,7 +19,7 @@
     "@tsconfig/node24": "^24.0.3",
     "@types/node": "^24.10.1",
     "@unhead/vue": "^2.0.19",
-    "@vitejs/plugin-vue": "^6.0.2",
+    "@vitejs/plugin-vue": "^6.0.9",
     "@vue/tsconfig": "^0.9.1",
     "beasties": "^0.3.5",
     "dotenv": "^17.2.3",
