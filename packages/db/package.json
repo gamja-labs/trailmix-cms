@@ -15,7 +15,7 @@
     "test:integration:docker": "docker compose -f test/integration/docker-compose.yml run --rm --build integration-tests; docker compose -f test/integration/docker-compose.yml down -v"
   },
   "dependencies": {
-    "@nestjs/common": "^11.1.28",
+    "@nestjs/common": "^12.1.2",
     "@nestjs/config": "^4.0.4",
     "@trailmix-cms/models": "workspace:*",
     "envalid": "^8.2.0",
@@ -37,7 +37,7 @@
     "typescript": "6.0.3"
   },
   "peerDependencies": {
-    "@nestjs/common": "^11.1.28",
+    "@nestjs/common": "^12.1.2",
     "@nestjs/config": "^4.0.4",
     "@trailmix-cms/models": "workspace:*",
     "mongodb": "^7.5.0",
