@@ -13,7 +13,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "@clerk/themes": "^2.4.41",
+    "@clerk/themes": "^2.4.64",
     "@clerk/vue": "^2.0.8",
     "@trailmix-cms/vue": "workspace:*",
     "@tsconfig/node24": "^24.0.3",
